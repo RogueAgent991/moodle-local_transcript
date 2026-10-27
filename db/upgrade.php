@@ -159,5 +159,10 @@ function xmldb_local_transcript_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026103600, 'local', 'transcript');
     }
 
+    if ($oldversion < 2026110100) {
+        // Nothing to change in the database. The version number now follows the date pattern of Moodle.
+        upgrade_plugin_savepoint(true, 2026110100, 'local', 'transcript');
+    }
+
     return true;
 }
