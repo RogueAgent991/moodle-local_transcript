@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/transcript/db" VERSION="2026102600" COMMENT="XMLDB file for Moodle local/transcript"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_transcript_template" COMMENT="Transcript layouts designed by administrators">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Whether users can choose this template"/>
+        <FIELD NAME="pagesize" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="A4" SEQUENCE="false"/>
+        <FIELD NAME="orientation" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="P" SEQUENCE="false"/>
+        <FIELD NAME="customwidth" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="210" SEQUENCE="false" DECIMALS="1" COMMENT="Page width in mm when the page size is custom"/>
+        <FIELD NAME="customheight" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="297" SEQUENCE="false" DECIMALS="1" COMMENT="Page height in mm when the page size is custom"/>
+        <FIELD NAME="leftmargin" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="15" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="rightmargin" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="15" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="topmargin" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="10" SEQUENCE="false" DECIMALS="1" COMMENT="Guide line in the header, in mm from the top of the page"/>
+        <FIELD NAME="bottommargin" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="10" SEQUENCE="false" DECIMALS="1" COMMENT="Guide line in the footer, in mm from the bottom of the page"/>
+        <FIELD NAME="headerheight" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="38" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="footerheight" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="22" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="headingheight" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="8" SEQUENCE="false" DECIMALS="1" COMMENT="Height of the band with the column headings at the top of the transcript section"/>
+        <FIELD NAME="groupheight" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="7" SEQUENCE="false" DECIMALS="1" COMMENT="Height of a group heading row"/>
+        <FIELD NAME="bodygap" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="3" SEQUENCE="false" DECIMALS="1" COMMENT="Not used any more, always 0"/>
+        <FIELD NAME="rowheight" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="10" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="bodyfont" TYPE="char" LENGTH="40" NOTNULL="true" DEFAULT="helvetica" SEQUENCE="false"/>
+        <FIELD NAME="bodyfontsize" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="9" SEQUENCE="false"/>
+        <FIELD NAME="bodycolour" TYPE="char" LENGTH="7" NOTNULL="true" DEFAULT="#000000" SEQUENCE="false"/>
+        <FIELD NAME="showheaderrow" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="headerrowbg" TYPE="char" LENGTH="7" NOTNULL="true" DEFAULT="#E6E9EE" SEQUENCE="false"/>
+        <FIELD NAME="headerrowcolour" TYPE="char" LENGTH="7" NOTNULL="true" DEFAULT="#000000" SEQUENCE="false"/>
+        <FIELD NAME="stripe" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="stripecolour" TYPE="char" LENGTH="7" NOTNULL="true" DEFAULT="#F5F6F8" SEQUENCE="false"/>
+        <FIELD NAME="rowlines" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="linecolour" TYPE="char" LENGTH="7" NOTNULL="true" DEFAULT="#C8CCD2" SEQUENCE="false"/>
+        <FIELD NAME="groupby" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="none" SEQUENCE="false" COMMENT="none, year or category"/>
+        <FIELD NAME="groupbg" TYPE="char" LENGTH="7" NOTNULL="true" DEFAULT="#F0F2F5" SEQUENCE="false"/>
+        <FIELD NAME="sortby" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="startdate_asc" SEQUENCE="false"/>
+        <FIELD NAME="includeinprogress" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="includeended" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Include courses where the enrolment is suspended or expired and the course is not completed"/>
+        <FIELD NAME="includehidden" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Include courses that are hidden"/>
+        <FIELD NAME="showhiddengrades" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="lastyears" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Only courses of the last this many years, 0 for all"/>
+        <FIELD NAME="dateformat" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="long" SEQUENCE="false"/>
+        <FIELD NAME="watermarkopacity" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="15" SEQUENCE="false"/>
+        <FIELD NAME="watermarkwidth" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="60" SEQUENCE="false" COMMENT="Percent of the body width"/>
+        <FIELD NAME="protection" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Comma separated list of PDF permissions that are blocked"/>
+        <FIELD NAME="emailsubject" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Subject of the email with the transcript, may contain placeholders"/>
+        <FIELD NAME="emailmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="HTML message of the email with the transcript, may contain placeholders"/>
+        <FIELD NAME="emailmessageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="columns" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON list of the columns of a layout made before the three sections were introduced. Not used any more."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_transcript_element" COMMENT="Elements placed in the header or footer of a template">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="templateid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="region" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="header" SEQUENCE="false" COMMENT="header, transcript_heading, transcript or footer"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="text" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="posx" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="posy" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="width" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="height" TYPE="number" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="1"/>
+        <FIELD NAME="showon" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 all pages, 1 first page, 2 last page, 3 all but the first page"/>
+        <FIELD NAME="data" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON with text, font, size, colour and so on"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="templateid" TYPE="foreign" FIELDS="templateid" REFTABLE="local_transcript_template" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_transcript_issue" COMMENT="Every transcript that was generated. Holds a snapshot so it can be regenerated from its verification code.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The student the transcript is about"/>
+        <FIELD NAME="issuedby" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The user who generated it"/>
+        <FIELD NAME="templateid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="templatename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="code" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="revoked" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="snapshot" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="JSON copy of the layout and the data used"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="code" UNIQUE="true" FIELDS="code"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="issuedby" UNIQUE="false" FIELDS="issuedby"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
