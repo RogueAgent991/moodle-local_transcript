@@ -112,6 +112,10 @@ if ($templates) {
     // The transcript of the user.
     if (permissions::can_generate_for((int) $USER->id)) {
         echo $generateform((int) $USER->id, $templateid, get_string('generatemytranscript', 'local_transcript'));
+    } else if (!permissions::can_search_students() && !($userid && $userid != $USER->id)) {
+        // Nothing can be done here: the administrator did not allow this user to create transcripts.
+        echo $OUTPUT->notification(get_string('notallowedtocreate', 'local_transcript'),
+            \core\output\notification::NOTIFY_INFO);
     }
 
     // Find students.

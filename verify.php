@@ -50,7 +50,10 @@ if (!permissions::can_verify()) {
 }
 
 $message = '';
-if ($code !== '') {
+if ($code !== '' && \local_transcript\verify_throttle::is_blocked()) {
+    // Too many wrong codes: do not look at the code at all, and do not make the server wait.
+    $message = get_string('verifytoomanyattempts', 'local_transcript');
+} else if ($code !== '') {
     $issue = issue_manager::get_by_code(clean_param($code, PARAM_RAW_TRIMMED));
     if ($issue && !permissions::can_verify_issue($issue)) {
         // Do not tell people that a code exists when they may not use it.
@@ -71,9 +74,8 @@ if ($code !== '') {
         send_file($pdf, issue_manager::get_filename($issue), 0, 0, true, false, 'application/pdf');
     }
 
-    // Slow down people who keep guessing.
-    $SESSION->local_transcript_failures = ($SESSION->local_transcript_failures ?? 0) + 1;
-    sleep(min(5, $SESSION->local_transcript_failures));
+    // Count the wrong code, so that people who keep guessing are stopped.
+    \local_transcript\verify_throttle::record_failure();
     $message = $issue ? get_string('verifyrevoked', 'local_transcript') : get_string('verifynotfound', 'local_transcript');
 }
 

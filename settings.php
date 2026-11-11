@@ -71,6 +71,16 @@ if ($hassiteconfig) {
                 \local_transcript\helper::VERIFY_PUBLIC => new lang_string('verifyaccess_public', 'local_transcript'),
             ]));
 
+        $settings->add(new admin_setting_configmulticheckbox('local_transcript/whocancreate',
+            new lang_string('whocancreate', 'local_transcript'),
+            new lang_string('whocancreate_desc', 'local_transcript'),
+            ['manager' => 1, 'teacher' => 1, 'learner' => 1],
+            [
+                'manager' => new lang_string('whocancreate_manager', 'local_transcript'),
+                'teacher' => new lang_string('whocancreate_teacher', 'local_transcript'),
+                'learner' => new lang_string('whocancreate_learner', 'local_transcript'),
+            ]));
+
         $settings->add(new admin_setting_configcheckbox('local_transcript/emailenabled',
             new lang_string('emailenabled', 'local_transcript'),
             new lang_string('emailenabled_desc', 'local_transcript'), 1));

@@ -39,13 +39,41 @@ class permissions {
         return isloggedin() && !isguestuser();
     }
 
+    /** @var string[] The groups of users that the administrator can allow to create transcripts. */
+    public const GROUPS = ['manager', 'teacher', 'learner'];
+
+    /**
+     * The groups of users that may create transcripts, as chosen in the settings of the plugin.
+     * When nothing was chosen yet, all of them may.
+     *
+     * @return string[] Some of manager, teacher and learner.
+     */
+    public static function get_allowed_groups(): array {
+        $value = get_config('local_transcript', 'whocancreate');
+        if ($value === false || $value === null) {
+            return self::GROUPS;
+        }
+        return array_values(array_intersect(self::GROUPS, array_map('trim', explode(',', (string) $value))));
+    }
+
+    /**
+     * May this group of users create transcripts? Site administrators always may.
+     *
+     * @param string $group One of manager, teacher and learner.
+     * @return bool
+     */
+    public static function is_group_allowed(string $group): bool {
+        return is_siteadmin() || in_array($group, self::get_allowed_groups(), true);
+    }
+
     /**
      * May the current user generate the transcript of a student?
      *
-     * - Everyone with the "generate own" permission can generate their own.
+     * - Everyone with the "generate own" permission can generate their own, when learners are allowed to.
      * - For other students, the "generate for others" permission is needed. It can be given site wide (managers),
-     *   in the context of the student (for example to a parent or mentor) or in a course the student is in
-     *   (for instructors).
+     *   in the context of the student (for example to a parent or mentor: counted as managers) or in a course the
+     *   student is in (for instructors: counted as teachers). The administrator chooses which of these groups may
+     *   create transcripts (setting "whocancreate"). Whoever may, gets the full transcript of the student.
      *
      * @param int $studentid
      * @return bool
@@ -62,16 +90,25 @@ class permissions {
         }
         $system = \context_system::instance();
         if ((int) $USER->id === $studentid) {
-            return has_capability('local/transcript:generateown', $system);
+            return has_capability('local/transcript:generateown', $system) && self::is_group_allowed('learner');
+        }
+        if (is_siteadmin()) {
+            return true;
         }
 
         $capability = 'local/transcript:generateforothers';
-        if (has_capability($capability, $system) || has_capability($capability, \context_user::instance($studentid))) {
+        if (has_capability($capability, $system)) {
+            // Permission in the whole site: a manager.
+            return self::is_group_allowed('manager');
+        }
+        if (self::is_group_allowed('manager') && has_capability($capability, \context_user::instance($studentid))) {
             return true;
         }
-        foreach (self::get_enrolled_course_ids($studentid) as $courseid) {
-            if (has_capability($capability, \context_course::instance($courseid, IGNORE_MISSING))) {
-                return true;
+        if (self::is_group_allowed('teacher')) {
+            foreach (self::get_enrolled_course_ids($studentid) as $courseid) {
+                if (has_capability($capability, \context_course::instance($courseid, IGNORE_MISSING))) {
+                    return true;
+                }
             }
         }
         return false;
@@ -114,12 +151,16 @@ class permissions {
         if (!self::is_real_user()) {
             return false;
         }
-        $capability = 'local/transcript:generateforothers';
-        if (has_capability($capability, \context_system::instance())) {
+        if (is_siteadmin()) {
             return true;
         }
-        return (bool) get_user_capability_course($capability, $USER->id, false, '', '', 1)
-            || (bool) self::get_user_context_students();
+        $capability = 'local/transcript:generateforothers';
+        if (has_capability($capability, \context_system::instance())) {
+            // Permission in the whole site: a manager.
+            return self::is_group_allowed('manager');
+        }
+        return (self::is_group_allowed('teacher') && get_user_capability_course($capability, $USER->id, false, '', '', 1))
+            || (self::is_group_allowed('manager') && self::get_user_context_students());
     }
 
     /**
@@ -292,11 +333,20 @@ class permissions {
         }
 
         $joins = '';
-        if (!has_capability($capability, \context_system::instance())) {
-            $courseids = array_map(function ($course) {
-                return (int) $course->id;
-            }, get_user_capability_course($capability, $USER->id, false) ?: []);
-            $studentids = self::get_user_context_students();
+        $systemlevel = has_capability($capability, \context_system::instance());
+        $seeseveryone = is_siteadmin() || ($systemlevel && self::is_group_allowed('manager'));
+        if (!$seeseveryone) {
+            // Somebody with the permission in the whole site is a manager. When managers are not allowed, that is it.
+            $courseids = [];
+            $studentids = [];
+            if (!$systemlevel && self::is_group_allowed('teacher')) {
+                $courseids = array_map(function ($course) {
+                    return (int) $course->id;
+                }, get_user_capability_course($capability, $USER->id, false) ?: []);
+            }
+            if (!$systemlevel && self::is_group_allowed('manager')) {
+                $studentids = self::get_user_context_students();
+            }
             $access = [];
             if ($courseids) {
                 [$insql, $inparams] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'crs');

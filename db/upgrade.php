@@ -164,5 +164,11 @@ function xmldb_local_transcript_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026110100, 'local', 'transcript');
     }
 
+    if ($oldversion < 2026111100) {
+        // Nothing to change in the database. New: a cache for wrong verification codes, a setting for who can create
+        // transcripts, and a smaller privacy export for the person who generated a transcript.
+        upgrade_plugin_savepoint(true, 2026111100, 'local', 'transcript');
+    }
+
     return true;
 }

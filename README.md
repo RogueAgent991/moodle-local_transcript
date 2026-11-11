@@ -1,6 +1,10 @@
-# Student Transcript (local_transcript) for Moodle 4.5
+# Student Transcript (local_transcript)
 
 Generates a protected PDF transcript of all the courses a student has taken or is taking.
+
+## Supported Moodle versions
+- Built for and tested on **Moodle 4.5**. The plugin requires Moodle 4.5 or later.
+- Moodle 5.x has **not been tested yet**. It may work, but it is not claimed to.
 
 ## Where to find it
 Site administration has a **Transcripts** menu (next to Plugins) with: Settings, Transcript layouts, Issued transcripts.
@@ -21,10 +25,20 @@ Open Transcripts > Transcript layouts, create a layout, then use the tabs:
 
 ## Who can do what
 - Everyone logged in: generate own transcript, send by email.
-- Managers and course teachers: generate for students (teachers: students in their courses).
+- Managers and course teachers: generate for students (teachers: students in their courses). Whoever is allowed gets the
+  full transcript, with every course of the student. Site administration > Transcripts > General settings >
+  **Who can create transcripts** lets the administrator allow or stop Managers, Teachers and Learners (site
+  administrators can always). Who counts as a manager or a teacher follows the roles that have the permission
+  "Generate the transcript of other users": site-wide or for a student = managers, in a course = teachers.
 - Managers: manage layouts, see/revoke/delete issued transcripts.
 - Verification code: Site administration > Transcripts > General settings chooses who may use it: course teachers and
   managers; the learner, course teachers and managers; any logged in user; or anybody.
+
+Wrong verification codes are counted for the user and for the computer (a short-lived, shared cache). After ten wrong
+codes nothing more is tried for about fifteen minutes.
+
+## Tests and checks
+PHPUnit tests are in `tests/`. A GitHub Actions workflow (`.github/workflows/ci.yml`) runs the moodle-plugin-ci checks.
 
 ## Settings
 Site administration > **Transcripts** (the new menu next to Plugins) > General settings. It is also listed under

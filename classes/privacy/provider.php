@@ -112,26 +112,34 @@ class provider implements
             ['userid' => $userid, 'issuedby' => $userid], 'timecreated ASC');
         $transcripts = [];
         foreach ($records as $record) {
-            $model = json_decode($record->snapshot, true) ?: [];
-            $courses = [];
-            foreach (($model['courses'] ?? []) as $course) {
-                $courses[] = [
-                    'course' => $course['fullname'] ?? '',
-                    'code' => $course['shortname'] ?? '',
-                    'status' => $course['status'] ?? '',
-                    'grade' => $course['grade'] ?? '',
-                    'completiondate' => !empty($course['completiondate']) ? transform::datetime($course['completiondate']) : '',
-                ];
-            }
-            $transcripts[] = [
+            $about = (int) $record->userid === (int) $userid;
+            $transcript = [
                 'layout' => $record->templatename,
-                'verificationcode' => $record->code,
                 'generatedon' => transform::datetime($record->timecreated),
-                'aboutthisuser' => transform::yesno((int) $record->userid === (int) $userid),
+                'aboutthisuser' => transform::yesno($about),
                 'generatedbythisuser' => transform::yesno((int) $record->issuedby === (int) $userid),
-                'student' => $model['user']['fullname'] ?? '',
-                'courses' => $courses,
             ];
+            if ($about) {
+                // The transcript of this user: everything that is on it.
+                $model = json_decode($record->snapshot, true) ?: [];
+                $courses = [];
+                foreach (($model['courses'] ?? []) as $course) {
+                    $courses[] = [
+                        'course' => $course['fullname'] ?? '',
+                        'code' => $course['shortname'] ?? '',
+                        'status' => $course['status'] ?? '',
+                        'grade' => $course['grade'] ?? '',
+                        'completiondate' => !empty($course['completiondate']) ?
+                            transform::datetime($course['completiondate']) : '',
+                    ];
+                }
+                $transcript['verificationcode'] = $record->code;
+                $transcript['student'] = $model['user']['fullname'] ?? '';
+                $transcript['courses'] = $courses;
+            }
+            // A transcript that the user only generated for somebody else is somebody else's data: only the fact
+            // that the user generated it, and when, is exported.
+            $transcripts[] = $transcript;
         }
         if ($transcripts) {
             writer::with_context($systemcontext)->export_data(
