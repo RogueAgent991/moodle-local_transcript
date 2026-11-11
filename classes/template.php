@@ -26,7 +26,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class template {
-
     /** @var string File area holding the pictures placed in elements. The item id is the element id. */
     public const FILEAREA_IMAGE = 'image';
     /** @var string File area holding the watermark of a template. The item id is the template id. */
@@ -360,8 +359,11 @@ class template {
         global $DB;
         $element = $DB->get_record('local_transcript_element', ['id' => $id], '*', MUST_EXIST);
         // Only the elements of the same part of the page count, because that is the list the person sees.
-        $all = array_values($DB->get_records('local_transcript_element',
-            ['templateid' => $element->templateid, 'region' => $element->region], 'sortorder ASC, id ASC'));
+        $all = array_values($DB->get_records(
+            'local_transcript_element',
+            ['templateid' => $element->templateid, 'region' => $element->region],
+            'sortorder ASC, id ASC'
+        ));
         $index = null;
         foreach ($all as $i => $candidate) {
             if ((int) $candidate->id === (int) $id) {
@@ -407,8 +409,14 @@ class template {
      * @return \stored_file|null The first file, if any.
      */
     public static function get_first_file(string $filearea, int $itemid): ?\stored_file {
-        $files = get_file_storage()->get_area_files(self::get_context()->id, 'local_transcript', $filearea, $itemid,
-            'sortorder, id', false);
+        $files = get_file_storage()->get_area_files(
+            self::get_context()->id,
+            'local_transcript',
+            $filearea,
+            $itemid,
+            'sortorder, id',
+            false
+        );
         return $files ? reset($files) : null;
     }
 
@@ -580,8 +588,18 @@ class template {
 
         $converted = self::columns_to_elements(helper::get_default_columns(), $template);
         foreach (array_merge($converted['heading'], $converted['row']) as $element) {
-            self::insert_starter_element($templateid, $element['region'], $element['type'], $element['name'],
-                $element['posx'], $element['posy'], $element['width'], $element['height'], 0, $element['data']);
+            self::insert_starter_element(
+                $templateid,
+                $element['region'],
+                $element['type'],
+                $element['name'],
+                $element['posx'],
+                $element['posy'],
+                $element['width'],
+                $element['height'],
+                0,
+                $element['data']
+            );
         }
     }
 
@@ -599,8 +617,18 @@ class template {
      * @param int $showon
      * @param array $data
      */
-    public static function insert_starter_element(int $templateid, string $region, string $type, string $name, float $x,
-            float $y, float $w, float $h, int $showon, array $data): void {
+    public static function insert_starter_element(
+        int $templateid,
+        string $region,
+        string $type,
+        string $name,
+        float $x,
+        float $y,
+        float $w,
+        float $h,
+        int $showon,
+        array $data
+    ): void {
         $element = new \stdClass();
         $element->templateid = $templateid;
         $element->region = $region;

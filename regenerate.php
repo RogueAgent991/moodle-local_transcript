@@ -57,8 +57,12 @@ if ($templateid !== (int) $old->templateid) {
     }
 }
 
-$issue = issue_manager::create_issue($templateid, (int) $old->userid, (int) $USER->id,
-    ['includeinprogress' => $includeinprogress, 'lastyears' => $lastyears]);
+$issue = issue_manager::create_issue(
+    $templateid,
+    (int) $old->userid,
+    (int) $USER->id,
+    ['includeinprogress' => $includeinprogress, 'lastyears' => $lastyears]
+);
 
 if ($action === 'email') {
     redirect(new moodle_url('/local/transcript/email.php', ['id' => $issue->id]));

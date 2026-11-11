@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Settings and admin pages of the Student Transcript plugin.
  *
@@ -31,25 +30,39 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $ADMIN->add('root', new admin_category('local_transcript_category',
-        new lang_string('transcripts', 'local_transcript')), 'modules');
+    $ADMIN->add('root', new admin_category(
+        'local_transcript_category',
+        new lang_string('transcripts', 'local_transcript')
+    ), 'modules');
 
-    $settings = new admin_settingpage('local_transcript', new lang_string('generalsettings', 'local_transcript'),
-        'moodle/site:config');
+    $settings = new admin_settingpage(
+        'local_transcript',
+        new lang_string('generalsettings', 'local_transcript'),
+        'moodle/site:config'
+    );
     // The settings page is part of Local plugins, which is where Moodle looks for the settings of a local plugin.
     $ADMIN->add('localplugins', $settings);
 
-    $ADMIN->add('local_transcript_category', new admin_externalpage('local_transcript_templates',
-        new lang_string('templates', 'local_transcript'), new moodle_url('/local/transcript/templates.php'),
-        'local/transcript:managetemplates'));
-    $ADMIN->add('local_transcript_category', new admin_externalpage('local_transcript_issues',
-        new lang_string('issuedtranscripts', 'local_transcript'), new moodle_url('/local/transcript/issues.php'),
-        'local/transcript:viewissues'));
+    $ADMIN->add('local_transcript_category', new admin_externalpage(
+        'local_transcript_templates',
+        new lang_string('templates', 'local_transcript'),
+        new moodle_url('/local/transcript/templates.php'),
+        'local/transcript:managetemplates'
+    ));
+    $ADMIN->add('local_transcript_category', new admin_externalpage(
+        'local_transcript_issues',
+        new lang_string('issuedtranscripts', 'local_transcript'),
+        new moodle_url('/local/transcript/issues.php'),
+        'local/transcript:viewissues'
+    ));
 
     // A link in the Transcripts menu to the settings.
-    $ADMIN->add('local_transcript_category', new admin_externalpage('local_transcript_settingslink',
+    $ADMIN->add('local_transcript_category', new admin_externalpage(
+        'local_transcript_settingslink',
         new lang_string('generalsettings', 'local_transcript'),
-        new moodle_url('/admin/settings.php', ['section' => 'local_transcript']), 'moodle/site:config'));
+        new moodle_url('/admin/settings.php', ['section' => 'local_transcript']),
+        'moodle/site:config'
+    ));
 
     if ($ADMIN->fulltree) {
         $links = html_writer::alist([
@@ -58,25 +71,51 @@ if ($hassiteconfig) {
             html_writer::link(new moodle_url('/local/transcript/issues.php'), get_string('issuedtranscripts', 'local_transcript')),
             html_writer::link(new moodle_url('/local/transcript/index.php'), get_string('generatetranscripts', 'local_transcript')),
         ]);
-        $settings->add(new admin_setting_heading('local_transcript/links', get_string('settingslinks', 'local_transcript'),
-            $links));
+        $settings->add(new admin_setting_heading(
+            'local_transcript/links',
+            get_string('settingslinks', 'local_transcript'),
+            $links
+        ));
 
-        $settings->add(new admin_setting_configselect('local_transcript/verifyaccess',
+        $settings->add(new admin_setting_configselect(
+            'local_transcript/verifyaccess',
             new lang_string('verifyaccess', 'local_transcript'),
             new lang_string('verifyaccess_desc', 'local_transcript'),
-            \local_transcript\helper::VERIFY_CAPABILITY, [
+            \local_transcript\helper::VERIFY_CAPABILITY,
+            [
                 \local_transcript\helper::VERIFY_CAPABILITY => new lang_string('verifyaccess_capability', 'local_transcript'),
                 \local_transcript\helper::VERIFY_LEARNER => new lang_string('verifyaccess_learner', 'local_transcript'),
                 \local_transcript\helper::VERIFY_LOGGEDIN => new lang_string('verifyaccess_loggedin', 'local_transcript'),
                 \local_transcript\helper::VERIFY_PUBLIC => new lang_string('verifyaccess_public', 'local_transcript'),
-            ]));
+            ]
+        ));
 
-        $settings->add(new admin_setting_configcheckbox('local_transcript/emailenabled',
+        $settings->add(new admin_setting_configmulticheckbox(
+            'local_transcript/whocancreate',
+            new lang_string('whocancreate', 'local_transcript'),
+            new lang_string('whocancreate_desc', 'local_transcript'),
+            ['manager' => 1, 'teacher' => 1, 'learner' => 1],
+            [
+                'manager' => new lang_string('whocancreate_manager', 'local_transcript'),
+                'teacher' => new lang_string('whocancreate_teacher', 'local_transcript'),
+                'learner' => new lang_string('whocancreate_learner', 'local_transcript'),
+            ]
+        ));
+
+        $settings->add(new admin_setting_configcheckbox(
+            'local_transcript/emailenabled',
             new lang_string('emailenabled', 'local_transcript'),
-            new lang_string('emailenabled_desc', 'local_transcript'), 1));
+            new lang_string('emailenabled_desc', 'local_transcript'),
+            1
+        ));
 
-        $settings->add(new admin_setting_configtext('local_transcript/maxrecipients',
+        $settings->add(new admin_setting_configtext(
+            'local_transcript/maxrecipients',
             new lang_string('maxrecipients', 'local_transcript'),
-            new lang_string('maxrecipients_desc', 'local_transcript'), 5, PARAM_INT, 3));
+            new lang_string('maxrecipients_desc', 'local_transcript'),
+            5,
+            PARAM_INT,
+            3
+        ));
     }
 }

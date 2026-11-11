@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript;
 
 /**
@@ -27,7 +26,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ui {
-
     /**
      * Set up the page. All pages of the plugin live in the system context.
      *
@@ -55,14 +53,22 @@ class ui {
     public static function template_tabs(int $templateid, string $active): string {
         global $OUTPUT;
         $tabs = [];
-        $tabs[] = new \tabobject('master', new \moodle_url('/local/transcript/template.php', ['id' => $templateid]),
-            get_string('tab_master', 'local_transcript'));
+        $tabs[] = new \tabobject(
+            'master',
+            new \moodle_url('/local/transcript/template.php', ['id' => $templateid]),
+            get_string('tab_master', 'local_transcript')
+        );
         foreach (['header', 'transcript', 'footer'] as $section) {
-            $tabs[] = new \tabobject($section, new \moodle_url('/local/transcript/designer.php',
-                ['id' => $templateid, 'section' => $section]), get_string('tab_' . $section, 'local_transcript'));
+            $tabs[] = new \tabobject($section, new \moodle_url(
+                '/local/transcript/designer.php',
+                ['id' => $templateid, 'section' => $section]
+            ), get_string('tab_' . $section, 'local_transcript'));
         }
-        $tabs[] = new \tabobject('preview', new \moodle_url('/local/transcript/preview.php', ['id' => $templateid]),
-            get_string('tab_preview', 'local_transcript'));
+        $tabs[] = new \tabobject(
+            'preview',
+            new \moodle_url('/local/transcript/preview.php', ['id' => $templateid]),
+            get_string('tab_preview', 'local_transcript')
+        );
         return $OUTPUT->tabtree($tabs, $active);
     }
 
@@ -133,8 +139,14 @@ class ui {
      * @param bool $follower True for a copy that cannot be dragged and shows what the real element does.
      * @return string HTML
      */
-    public static function render_canvas(\stdClass $template, string $region, array $elements, ?array $sample = null,
-            int $number = 0, bool $follower = false): string {
+    public static function render_canvas(
+        \stdClass $template,
+        string $region,
+        array $elements,
+        ?array $sample = null,
+        int $number = 0,
+        bool $follower = false
+    ): string {
         [$pw] = helper::get_template_dimensions($template);
         $sectionheight = max(helper::get_section_height($template, $region), 6.0);
         $pct = function (float $value, float $total): string {
@@ -164,13 +176,24 @@ class ui {
             $out .= \html_writer::div('', 'lt-margin lt-margin-top', ['style' => 'top:' . $pct($inset, $sectionheight)]);
         } else if ($region === helper::REGION_FOOTER) {
             $inset = min((float) $template->bottommargin, $sectionheight);
-            $out .= \html_writer::div('', 'lt-margin lt-margin-bottom',
-                ['style' => 'top:' . $pct($sectionheight - $inset, $sectionheight)]);
+            $out .= \html_writer::div(
+                '',
+                'lt-margin lt-margin-bottom',
+                ['style' => 'top:' . $pct($sectionheight - $inset, $sectionheight)]
+            );
         }
         $sample = $sample ?? data_collector::get_sample_data()['courses'][0];
         foreach ($elements as $element) {
-            $out .= self::render_canvas_element($element, $template, $pw, $sectionheight, $pct, $sample, $number ?: 1,
-                $follower);
+            $out .= self::render_canvas_element(
+                $element,
+                $template,
+                $pw,
+                $sectionheight,
+                $pct,
+                $sample,
+                $number ?: 1,
+                $follower
+            );
         }
         $out .= \html_writer::end_div();
         return $out;
@@ -189,8 +212,16 @@ class ui {
      * @param bool $follower A copy that cannot be dragged.
      * @return string
      */
-    private static function render_canvas_element(\stdClass $element, \stdClass $template, float $pw, float $sh,
-            callable $pct, array $sample, int $number = 1, bool $follower = false): string {
+    private static function render_canvas_element(
+        \stdClass $element,
+        \stdClass $template,
+        float $pw,
+        float $sh,
+        callable $pct,
+        array $sample,
+        int $number = 1,
+        bool $follower = false
+    ): string {
         $fixed = in_array($element->region, [helper::REGION_ROW, helper::REGION_HEADING]);
         $width = (float) $element->width;
         if ($width <= 0) {
@@ -224,14 +255,23 @@ class ui {
                     $style .= 'font-style:italic;';
                 }
                 if ($element->type === 'coursefield') {
-                    $content = s($data['prefix'] . helper::get_course_field_text($sample, $data['field'], $number,
-                        $template->dateformat, isset($data['decimals']) ? (int) $data['decimals'] : null));
+                    $content = s($data['prefix'] . helper::get_course_field_text(
+                        $sample,
+                        $data['field'],
+                        $number,
+                        $template->dateformat,
+                        isset($data['decimals']) ? (int) $data['decimals'] : null
+                    ));
                 } else if (helper::has_rich_text((string) $data['text'])) {
                     // Links and simple formatting, as in the PDF. Links are shown but cannot be clicked here.
-                    $content = placeholders::replace(helper::sanitise_rich_text((string) $data['text']),
+                    $content = placeholders::replace(
+                        helper::sanitise_rich_text((string) $data['text']),
                         ['user' => ['fullname' => 'Alex Morgan'], 'code' => 'XXXX-XXXX-XXXX', 'courses' => [],
                         'sitename' => get_site()->fullname, 'issuedate' => time(), 'template' => (array) $template],
-                        1, 1, true);
+                        1,
+                        1,
+                        true
+                    );
                     $style .= 'white-space:normal;';
                 } else {
                     $content = s($data['text']);
@@ -247,12 +287,19 @@ class ui {
                 $style .= 'height:' . $pct($height > 0 ? $height : ($element->type === 'image' ? 15.0 : 30.0), $sh) . ';';
                 $file = $element->type === 'image' ? template::get_first_file(template::FILEAREA_IMAGE, (int) $element->id) : null;
                 if ($file) {
-                    $url = \moodle_url::make_pluginfile_url($file->get_contextid(), 'local_transcript',
-                        template::FILEAREA_IMAGE, $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+                    $url = \moodle_url::make_pluginfile_url(
+                        $file->get_contextid(),
+                        'local_transcript',
+                        template::FILEAREA_IMAGE,
+                        $file->get_itemid(),
+                        $file->get_filepath(),
+                        $file->get_filename()
+                    );
                     $content = \html_writer::empty_tag('img', ['src' => $url->out(false), 'alt' => '',
                         'draggable' => 'false']);
                 } else {
-                    $content = s($element->type === 'image' ? $element->name : get_string('element_userpicture', 'local_transcript'));
+                    $label = $element->type === 'image' ? $element->name : get_string('element_userpicture', 'local_transcript');
+                    $content = s($label);
                     $style .= 'background:#dee2e6;color:#495057;font-size:0.75rem;text-align:center;';
                 }
                 break;

@@ -26,7 +26,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
-
     /** @var string Region names. */
     public const REGION_HEADER = 'header';
     /** @var string Region names. */
@@ -446,8 +445,13 @@ class helper {
      * @param int|null $decimals The number of decimal places of grades. Null leaves the grade as it is.
      * @return string
      */
-    public static function get_course_field_text(array $course, string $field, int $number, string $dateformat,
-            ?int $decimals = null): string {
+    public static function get_course_field_text(
+        array $course,
+        string $field,
+        int $number,
+        string $dateformat,
+        ?int $decimals = null
+    ): string {
         switch ($field) {
             case 'rownumber':
                 return (string) $number;
@@ -466,8 +470,10 @@ class helper {
             case 'completiondate':
                 if (empty($course['completiondate'])) {
                     // No date: say why. A course that is still going on is in progress, any other was not completed.
-                    return get_string(($course['status'] ?? '') === 'inprogress' ? 'status_inprogress' : 'status_ended',
-                        'local_transcript');
+                    return get_string(
+                        ($course['status'] ?? '') === 'inprogress' ? 'status_inprogress' : 'status_ended',
+                        'local_transcript'
+                    );
                 }
                 return self::format_date($course['completiondate'], $dateformat);
             case 'startdate':
@@ -605,7 +611,11 @@ class helper {
         try {
             $handler = \core_course\customfield\course_handler::create();
             foreach ($handler->get_fields() as $field) {
-                $result[$field->get('shortname')] = format_string($field->get('name'), true, ['context' => \context_system::instance()]);
+                $result[$field->get('shortname')] = format_string(
+                    $field->get('name'),
+                    true,
+                    ['context' => \context_system::instance()]
+                );
             }
         } catch (\Throwable $e) {
             // Custom fields are optional. Anything going wrong here must never break the transcript.

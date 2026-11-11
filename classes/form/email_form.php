@@ -32,7 +32,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class email_form extends \moodleform {
-
     /**
      * Form definition.
      */
@@ -44,8 +43,12 @@ class email_form extends \moodleform {
         $mform->addElement('hidden', 'templateid');
         $mform->setType('templateid', PARAM_INT);
 
-        $mform->addElement('textarea', 'recipients', get_string('emailrecipients', 'local_transcript'),
-            ['rows' => 3, 'cols' => 50, 'placeholder' => get_string('emailrecipients_placeholder', 'local_transcript')]);
+        $mform->addElement(
+            'textarea',
+            'recipients',
+            get_string('emailrecipients', 'local_transcript'),
+            ['rows' => 3, 'cols' => 50, 'placeholder' => get_string('emailrecipients_placeholder', 'local_transcript')]
+        );
         $mform->setType('recipients', PARAM_RAW);
         $mform->addHelpButton('recipients', 'emailrecipients', 'local_transcript');
 

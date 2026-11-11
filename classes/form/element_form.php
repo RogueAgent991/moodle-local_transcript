@@ -35,7 +35,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element_form extends \moodleform {
-
     /**
      * The options of the file picker used for pictures.
      *
@@ -79,15 +78,23 @@ class element_form extends \moodleform {
                 $mform->addElement('textarea', 'text', get_string('text', 'local_transcript'), ['rows' => 4, 'cols' => 50]);
                 $mform->setType('text', PARAM_RAW);
                 $mform->addElement('static', 'textlinkhelp', '', get_string('textlinkhelp', 'local_transcript'));
-                $mform->addElement('static', 'placeholders', get_string('placeholders', 'local_transcript'),
-                    $this->get_placeholder_help());
+                $mform->addElement(
+                    'static',
+                    'placeholders',
+                    get_string('placeholders', 'local_transcript'),
+                    $this->get_placeholder_help()
+                );
                 $this->add_font_fields($mform);
                 $mform->addElement('select', 'align', get_string('textalign', 'local_transcript'), helper::get_alignments());
                 break;
 
             case 'coursefield':
-                $mform->addElement('select', 'field', get_string('coursefield', 'local_transcript'),
-                    helper::get_column_fields());
+                $mform->addElement(
+                    'select',
+                    'field',
+                    get_string('coursefield', 'local_transcript'),
+                    helper::get_column_fields()
+                );
                 $mform->addHelpButton('field', 'coursefield', 'local_transcript');
                 $mform->addElement('text', 'prefix', get_string('prefix', 'local_transcript'), ['size' => 30]);
                 $mform->setType('prefix', PARAM_TEXT);
@@ -111,8 +118,13 @@ class element_form extends \moodleform {
                 break;
 
             case 'image':
-                $mform->addElement('filemanager', 'image_filemanager', get_string('element_image', 'local_transcript'), null,
-                    self::get_image_options());
+                $mform->addElement(
+                    'filemanager',
+                    'image_filemanager',
+                    get_string('element_image', 'local_transcript'),
+                    null,
+                    self::get_image_options()
+                );
                 break;
 
             case 'line':
@@ -227,15 +239,19 @@ class element_form extends \moodleform {
                 $errors['fontsize'] = get_string('err_numberrange', 'local_transcript', '4 - 96');
             }
         }
-        if ($type === 'coursefield' && in_array($data['field'], ['grade', 'gradepercent'])
-                && (($data['decimals'] ?? '') === '' || $data['decimals'] < 0 || $data['decimals'] > 6)) {
+        if (
+            $type === 'coursefield' && in_array($data['field'], ['grade', 'gradepercent'])
+                && (($data['decimals'] ?? '') === '' || $data['decimals'] < 0 || $data['decimals'] > 6)
+        ) {
             $errors['decimals'] = get_string('err_numberrange', 'local_transcript', '0 - 6');
         }
         if (in_array($type, ['line', 'rectangle']) && ($data['thickness'] < 0.1 || $data['thickness'] > 5)) {
             $errors['thickness'] = get_string('err_numberrange', 'local_transcript', '0.1 - 5');
         }
-        if ($type === 'rectangle' && empty($errors['width']) && empty($errors['height'])
-                && ($data['width'] <= 0 || $data['height'] <= 0)) {
+        if (
+            $type === 'rectangle' && empty($errors['width']) && empty($errors['height'])
+                && ($data['width'] <= 0 || $data['height'] <= 0)
+        ) {
             $errors['width'] = get_string('err_sizerequired', 'local_transcript');
         }
         return $errors;

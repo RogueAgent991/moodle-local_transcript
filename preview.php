@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Preview of a layout with made up students and courses, or with a real student.
  *
@@ -54,8 +53,12 @@ if ($raw) {
     send_file($pdf, 'preview.pdf', 0, 0, true, false, 'application/pdf');
 }
 
-ui::setup_page('/local/transcript/preview.php', ['id' => $id, 'userid' => $userid], get_string('tab_preview', 'local_transcript'),
-    'admin');
+ui::setup_page(
+    '/local/transcript/preview.php',
+    ['id' => $id, 'userid' => $userid],
+    get_string('tab_preview', 'local_transcript'),
+    'admin'
+);
 $pdfurl = new moodle_url('/local/transcript/preview.php', ['id' => $id, 'userid' => $userid, 'raw' => 1]);
 
 echo $OUTPUT->header();

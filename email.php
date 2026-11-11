@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Sends a generated transcript to email addresses that the user types.
  *
@@ -70,8 +69,12 @@ if ($data = $form->get_data()) {
         redirect($returnurl, $failmessage, null, \core\output\notification::NOTIFY_ERROR);
     }
     $message = $valid ? get_string('emailsent', 'local_transcript', count($sent)) : get_string('emailsentself', 'local_transcript');
-    redirect($returnurl, $message, null,
-        \core\output\notification::NOTIFY_SUCCESS);
+    redirect(
+        $returnurl,
+        $message,
+        null,
+        \core\output\notification::NOTIFY_SUCCESS
+    );
 }
 
 echo $OUTPUT->header();
@@ -83,6 +86,8 @@ echo html_writer::div(get_string('emailreadonlynote', 'local_transcript'), 'text
 echo html_writer::div(
     html_writer::div(html_writer::tag('strong', get_string('emailsubject', 'local_transcript') . ': ') .
         s(emailer::get_subject($issue)), 'mb-2') .
-    html_writer::div(emailer::get_message_html($issue), 'lt-email-preview'), 'border rounded p-3 mb-4 bg-light');
+    html_writer::div(emailer::get_message_html($issue), 'lt-email-preview'),
+    'border rounded p-3 mb-4 bg-light'
+);
 $form->display();
 echo $OUTPUT->footer();

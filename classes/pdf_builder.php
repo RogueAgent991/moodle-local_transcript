@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript;
 
 /**
@@ -45,7 +44,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pdf_builder {
-
     /** @var array The layout and the data. */
     private $model;
 
@@ -395,16 +393,46 @@ class pdf_builder {
                     $pdf->SetTextColorArray(helper::colour_to_rgb($t->bodycolour));
                     $pdf->setFont($t->bodyfont, 'B', $fontsize);
                     $pdf->setCellPaddings(1.2, 0, 1.2, 0);
-                    $pdf->MultiCell($this->tablewidth, $height, $line['label'], 0, 'L', false, 0, $this->left, $y, true, 0,
-                        false, true, $height, 'M');
+                    $pdf->MultiCell(
+                        $this->tablewidth,
+                        $height,
+                        $line['label'],
+                        0,
+                        'L',
+                        false,
+                        0,
+                        $this->left,
+                        $y,
+                        true,
+                        0,
+                        false,
+                        true,
+                        $height,
+                        'M'
+                    );
                     $pdf->setCellPaddings(0, 0, 0, 0);
                     break;
 
                 case 'empty':
                     $pdf->SetTextColorArray(helper::colour_to_rgb($t->bodycolour));
                     $pdf->setFont($t->bodyfont, 'I', $fontsize);
-                    $pdf->MultiCell($this->tablewidth, $height, $line['label'], 0, 'C', false, 0, $this->left, $y, true, 0,
-                        false, true, $height, 'M');
+                    $pdf->MultiCell(
+                        $this->tablewidth,
+                        $height,
+                        $line['label'],
+                        0,
+                        'C',
+                        false,
+                        0,
+                        $this->left,
+                        $y,
+                        true,
+                        0,
+                        false,
+                        true,
+                        $height,
+                        'M'
+                    );
                     break;
 
                 default:
@@ -436,8 +464,15 @@ class pdf_builder {
      * @param array|null $course The course, for elements of the course row.
      * @param int $number The number of the course row.
      */
-    private function draw_element(\pdf $pdf, array $element, float $top, int $page, int $total, ?array $course,
-            int $number): void {
+    private function draw_element(
+        \pdf $pdf,
+        array $element,
+        float $top,
+        int $page,
+        int $total,
+        ?array $course,
+        int $number
+    ): void {
         $region = $element['region'];
         $inheaderorfooter = $region === helper::REGION_HEADER || $region === helper::REGION_FOOTER;
         if ($inheaderorfooter && !$this->is_shown_on((int) $element['showon'], $page, $total)) {
@@ -454,8 +489,13 @@ class pdf_builder {
             case 'text':
                 if (helper::has_rich_text((string) $data['text'])) {
                     // Links and simple formatting. The values of the placeholders are made safe first.
-                    $html = placeholders::replace(helper::sanitise_rich_text((string) $data['text']), $this->model, $page,
-                        $total, true);
+                    $html = placeholders::replace(
+                        helper::sanitise_rich_text((string) $data['text']),
+                        $this->model,
+                        $page,
+                        $total,
+                        true
+                    );
                     $this->draw_text($pdf, $data, $html, $x, $y, $width, $height, !$inheaderorfooter, true);
                     break;
                 }
@@ -466,8 +506,13 @@ class pdf_builder {
                 if ($course === null || $data['field'] === '') {
                     break;
                 }
-                $value = helper::get_course_field_text($course, $data['field'], $number, $this->t->dateformat,
-                    isset($data['decimals']) ? (int) $data['decimals'] : null);
+                $value = helper::get_course_field_text(
+                    $course,
+                    $data['field'],
+                    $number,
+                    $this->t->dateformat,
+                    isset($data['decimals']) ? (int) $data['decimals'] : null
+                );
                 $this->draw_text($pdf, $data, $data['prefix'] . $value, $x, $y, $width, $height, true);
                 break;
             case 'image':
@@ -527,9 +572,19 @@ class pdf_builder {
      * @param float $width Zero means as wide as the room that is left on the page.
      * @param float $height
      * @param bool $fixed Keep the text inside a box of a fixed size.
+     * @param bool $ishtml Whether the text has HTML (links), instead of plain text.
      */
-    private function draw_text(\pdf $pdf, array $data, string $text, float $x, float $y, float $width, float $height,
-            bool $fixed, bool $ishtml = false): void {
+    private function draw_text(
+        \pdf $pdf,
+        array $data,
+        string $text,
+        float $x,
+        float $y,
+        float $width,
+        float $height,
+        bool $fixed,
+        bool $ishtml = false
+    ): void {
         if (trim(strip_tags($text)) === '') {
             return;
         }
@@ -551,14 +606,46 @@ class pdf_builder {
         $pitch = $this->line_pitch($fontsize);
         $boxheight = $height > 0 ? $height : $pitch;
         if ($ishtml) {
-            $pdf->MultiCell($width, $boxheight, $text, 0, $data['align'], false, 1, $x, $y, true, 0, true, true, $boxheight,
-                'T', false);
+            $pdf->MultiCell(
+                $width,
+                $boxheight,
+                $text,
+                0,
+                $data['align'],
+                false,
+                1,
+                $x,
+                $y,
+                true,
+                0,
+                true,
+                true,
+                $boxheight,
+                'T',
+                false
+            );
             return;
         }
         $maxlines = max(1, (int) floor(($boxheight + 0.05) / $pitch));
         $text = $this->fit_text($pdf, $text, $width, $maxlines);
-        $pdf->MultiCell($width, $boxheight, $text, 0, $data['align'], false, 1, $x, $y, true, 0, false, true, $boxheight, 'T',
-            false);
+        $pdf->MultiCell(
+            $width,
+            $boxheight,
+            $text,
+            0,
+            $data['align'],
+            false,
+            1,
+            $x,
+            $y,
+            true,
+            0,
+            false,
+            true,
+            $boxheight,
+            'T',
+            false
+        );
     }
 
     /**
@@ -600,8 +687,15 @@ class pdf_builder {
      * @param float $height Zero keeps the shape of the picture, using the width.
      * @param float $defaultwidth The width to use when both width and height are zero.
      */
-    private function draw_image(\pdf $pdf, string $key, float $x, float $y, float $width, float $height,
-            float $defaultwidth): void {
+    private function draw_image(
+        \pdf $pdf,
+        string $key,
+        float $x,
+        float $y,
+        float $width,
+        float $height,
+        float $defaultwidth
+    ): void {
         $path = $this->get_image_path($key);
         if ($path === null) {
             return;

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript\form;
 
 use local_transcript\helper;
@@ -37,7 +36,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class template_form extends \moodleform {
-
+    /** @var string[] The settings that hold a colour. */
     private const COLOURS = ['stripecolour', 'linecolour', 'groupbg'];
 
     /**
@@ -128,8 +127,16 @@ class template_form extends \moodleform {
         $mform->addHelpButton('headerheight', 'headerheight', 'local_transcript');
         $mform->addElement('float', 'footerheight', get_string('footerheight', 'local_transcript'), ['size' => 6]);
         $mform->addHelpButton('footerheight', 'footerheight', 'local_transcript');
-        $mform->addElement('static', 'transcriptheightinfo', get_string('transcriptheight', 'local_transcript'),
-            get_string('transcriptheight_value', 'local_transcript', format_float((float) ($this->_customdata['transcriptheight'] ?? 0), 1)));
+        $mform->addElement(
+            'static',
+            'transcriptheightinfo',
+            get_string('transcriptheight', 'local_transcript'),
+            get_string(
+                'transcriptheight_value',
+                'local_transcript',
+                format_float((float) ($this->_customdata['transcriptheight'] ?? 0), 1)
+            )
+        );
         $mform->addHelpButton('transcriptheightinfo', 'transcriptheight', 'local_transcript');
         $mform->addElement('float', 'headingheight', get_string('headingheight', 'local_transcript'), ['size' => 6]);
         $mform->addHelpButton('headingheight', 'headingheight', 'local_transcript');
@@ -149,8 +156,12 @@ class template_form extends \moodleform {
         $mform->addElement('select', 'sortby', get_string('sortby', 'local_transcript'), helper::get_sort_options());
         $mform->addElement('select', 'groupby', get_string('groupby', 'local_transcript'), helper::get_groupby_options());
         $mform->addHelpButton('groupby', 'groupby', 'local_transcript');
-        $mform->addElement('select', 'dateformat', get_string('dateformat', 'local_transcript'),
-            helper::get_date_format_options());
+        $mform->addElement(
+            'select',
+            'dateformat',
+            get_string('dateformat', 'local_transcript'),
+            helper::get_date_format_options()
+        );
         $mform->addHelpButton('dateformat', 'dateformat', 'local_transcript');
 
         // The look of the course table.
@@ -171,23 +182,42 @@ class template_form extends \moodleform {
         $mform->setType('emailsubject', PARAM_TEXT);
         $mform->addRule('emailsubject', null, 'required', null, 'client');
         $mform->addRule('emailsubject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addElement('editor', 'emailmessage_editor', get_string('emailmessagetemplate', 'local_transcript'),
-            ['rows' => 12], self::get_email_editor_options());
+        $mform->addElement(
+            'editor',
+            'emailmessage_editor',
+            get_string('emailmessagetemplate', 'local_transcript'),
+            ['rows' => 12],
+            self::get_email_editor_options()
+        );
         $mform->setType('emailmessage_editor', PARAM_RAW);
         $mform->addRule('emailmessage_editor', null, 'required', null, 'client');
-        $mform->addElement('static', 'emailplaceholders', get_string('emailplaceholders', 'local_transcript'),
-            \local_transcript\placeholders::get_help_html());
+        $mform->addElement(
+            'static',
+            'emailplaceholders',
+            get_string('emailplaceholders', 'local_transcript'),
+            \local_transcript\placeholders::get_help_html()
+        );
 
         // Pictures behind the content.
         $mform->addElement('header', 'backgroundhdr', get_string('backgroundgraphic', 'local_transcript'));
         $mform->addElement('static', 'backgroundinfo', '', get_string('backgroundgraphic_desc', 'local_transcript'));
-        $mform->addElement('filemanager', 'background_filemanager', get_string('backgroundimage', 'local_transcript'), null,
-            self::get_background_options());
+        $mform->addElement(
+            'filemanager',
+            'background_filemanager',
+            get_string('backgroundimage', 'local_transcript'),
+            null,
+            self::get_background_options()
+        );
 
         $mform->addElement('header', 'watermarkhdr', get_string('watermark', 'local_transcript'));
         $mform->addElement('static', 'watermarkinfo', '', get_string('watermark_desc', 'local_transcript'));
-        $mform->addElement('filemanager', 'watermark_filemanager', get_string('watermarkimage', 'local_transcript'), null,
-            self::get_watermark_options());
+        $mform->addElement(
+            'filemanager',
+            'watermark_filemanager',
+            get_string('watermarkimage', 'local_transcript'),
+            null,
+            self::get_watermark_options()
+        );
         $mform->addElement('text', 'watermarkopacity', get_string('watermarkopacity', 'local_transcript'), ['size' => 4]);
         $mform->setType('watermarkopacity', PARAM_INT);
         $mform->addHelpButton('watermarkopacity', 'watermarkopacity', 'local_transcript');
@@ -254,7 +284,8 @@ class template_form extends \moodleform {
         $errors += form_helper::validate_colours($data, self::COLOURS);
 
         $ranges = [
-            'leftmargin' => [0, 100], 'rightmargin' => [0, 100], 'topmargin' => [0, 200], 'bottommargin' => [0, 200], 'headerheight' => [0, 400], 'footerheight' => [0, 400],
+            'leftmargin' => [0, 100], 'rightmargin' => [0, 100], 'topmargin' => [0, 200], 'bottommargin' => [0, 200],
+            'headerheight' => [0, 400], 'footerheight' => [0, 400],
             'headingheight' => [0, 50], 'rowheight' => [3, 150], 'groupheight' => [3, 50],
         ];
         if ($data['pagesize'] === 'CUSTOM') {
@@ -288,8 +319,11 @@ class template_form extends \moodleform {
             $transcriptheight = $height - $data['headerheight'] - $data['footerheight'];
             $needed = $data['headingheight'] + $data['groupheight'] + $data['rowheight'];
             if ($transcriptheight < $needed) {
-                $errors['footerheight'] = get_string('err_heightstoolarge', 'local_transcript',
-                    format_float($transcriptheight, 1));
+                $errors['footerheight'] = get_string(
+                    'err_heightstoolarge',
+                    'local_transcript',
+                    format_float($transcriptheight, 1)
+                );
             }
         }
         return $errors;

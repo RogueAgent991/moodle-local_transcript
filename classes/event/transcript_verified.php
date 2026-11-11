@@ -26,7 +26,6 @@ namespace local_transcript\event;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class transcript_verified extends \core\event\base {
-
     /**
      * Set the basic properties of the event.
      */
