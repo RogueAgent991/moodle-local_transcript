@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * The page of a generated transcript: look at it, download it or send it by email.
  *
@@ -35,8 +34,12 @@ require_login(null, false);
 
 $id = required_param('id', PARAM_INT);
 $download = optional_param('download', 0, PARAM_BOOL);
-$issue = $DB->get_record('local_transcript_issue', ['id' => $id],
-    'id, userid, issuedby, templateid, templatename, code, revoked, timecreated, snapshot', MUST_EXIST);
+$issue = $DB->get_record(
+    'local_transcript_issue',
+    ['id' => $id],
+    'id, userid, issuedby, templateid, templatename, code, revoked, timecreated, snapshot',
+    MUST_EXIST
+);
 permissions::require_access_issue($issue);
 
 ui::setup_page('/local/transcript/transcript.php', ['id' => $id], get_string('transcript', 'local_transcript'));
@@ -71,13 +74,21 @@ $lastyears = (int) ($model['template']['lastyears'] ?? 0);
 $checkbox = html_writer::div(
     html_writer::empty_tag('input', ['type' => 'checkbox', 'name' => 'includeinprogress', 'value' => 1, 'id' => 'lt-inprogress',
         'class' => 'form-check-input'] + ($includeinprogress ? ['checked' => 'checked'] : [])) .
-    html_writer::label(get_string('optincludeinprogress', 'local_transcript'), 'lt-inprogress',
-        true, ['class' => 'form-check-label ml-2 ms-2']), 'form-check mb-2');
+    html_writer::label(
+        get_string('optincludeinprogress', 'local_transcript'),
+        'lt-inprogress',
+        true,
+        ['class' => 'form-check-label ml-2 ms-2']
+    ),
+    'form-check mb-2'
+);
 $years = html_writer::div(
     html_writer::label(get_string('optlastyears', 'local_transcript'), 'lt-lastyears', true, ['class' => 'mr-2 me-2 mb-0']) .
     html_writer::empty_tag('input', ['type' => 'number', 'name' => 'lastyears', 'id' => 'lt-lastyears', 'min' => 0, 'max' => 100,
         'value' => $lastyears, 'class' => 'form-control', 'style' => 'width:6rem']) .
-    $OUTPUT->help_icon('optlastyears', 'local_transcript'), 'd-flex align-items-center mb-3');
+    $OUTPUT->help_icon('optlastyears', 'local_transcript'),
+    'd-flex align-items-center mb-3'
+);
 
 $submit = function (string $action, string $label, string $class) {
     return html_writer::tag('button', $label, ['type' => 'submit', 'name' => 'action', 'value' => $action,
@@ -103,15 +114,20 @@ if (count($layouts) > 1) {
             html_writer::empty_tag('input', ['type' => 'radio', 'name' => 'templateid', 'value' => $layoutid,
                 'id' => $inputid, 'class' => 'form-check-input'] +
                 ($layoutid == $issue->templateid ? ['checked' => 'checked'] : [])) .
-            html_writer::label($name, $inputid, true, ['class' => 'form-check-label ml-2 ms-2']), 'form-check');
+            html_writer::label($name, $inputid, true, ['class' => 'form-check-label ml-2 ms-2']),
+            'form-check'
+        );
     }
     $choice = html_writer::div($choice, 'mb-3');
 }
 echo $OUTPUT->heading(get_string('transcriptoptions', 'local_transcript'), 4);
-echo html_writer::tag('form', html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]) .
+echo html_writer::tag(
+    'form',
+    html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]) .
     html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $id]) .
     $choice . $checkbox . $years . html_writer::div($buttons, 'd-flex mb-3'),
-    ['method' => 'post', 'action' => (new moodle_url('/local/transcript/regenerate.php'))->out(false)]);
+    ['method' => 'post', 'action' => (new moodle_url('/local/transcript/regenerate.php'))->out(false)]
+);
 if ($download) {
     // The PDF of the transcript that was just made is downloaded while this page is shown.
     echo html_writer::tag('iframe', '', ['src' => $downloadurl->out(false), 'style' => 'display:none', 'title' => '']);
@@ -121,6 +137,8 @@ echo html_writer::tag('object', html_writer::link($viewurl, get_string('openpdf'
     'data' => $viewurl->out(false), 'type' => 'application/pdf', 'style' => 'width:100%;height:80vh;border:1px solid #ccc',
 ]);
 
-echo html_writer::div(html_writer::link(new moodle_url('/local/transcript/index.php'),
-    get_string('backtostart', 'local_transcript')), 'mt-3');
+echo html_writer::div(html_writer::link(
+    new moodle_url('/local/transcript/index.php'),
+    get_string('backtostart', 'local_transcript')
+), 'mt-3');
 echo $OUTPUT->footer();

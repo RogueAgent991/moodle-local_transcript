@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * The list of transcript layouts.
  *
@@ -47,23 +46,37 @@ if ($action !== '' && $id) {
     switch ($action) {
         case 'duplicate':
             template::duplicate($id);
-            redirect($listurl, get_string('templateduplicated', 'local_transcript'), null,
-                \core\output\notification::NOTIFY_SUCCESS);
+            redirect(
+                $listurl,
+                get_string('templateduplicated', 'local_transcript'),
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
+            break;
         case 'togglevisible':
             $DB->set_field('local_transcript_template', 'visible', $record->visible ? 0 : 1, ['id' => $id]);
             redirect($listurl);
+            break;
         case 'setdefault':
             set_config('defaulttemplate', $id, 'local_transcript');
             redirect($listurl, get_string('defaultset', 'local_transcript'), null, \core\output\notification::NOTIFY_SUCCESS);
+            break;
         case 'delete':
             if ($confirm) {
                 template::delete($id);
-                redirect($listurl, get_string('templatedeleted', 'local_transcript'), null,
-                    \core\output\notification::NOTIFY_SUCCESS);
+                redirect(
+                    $listurl,
+                    get_string('templatedeleted', 'local_transcript'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
             }
             echo $OUTPUT->header();
-            echo $OUTPUT->confirm(get_string('deletetemplate_confirm', 'local_transcript', format_string($record->name)),
-                new moodle_url($listurl, ['action' => 'delete', 'id' => $id, 'confirm' => 1, 'sesskey' => sesskey()]), $listurl);
+            echo $OUTPUT->confirm(
+                get_string('deletetemplate_confirm', 'local_transcript', format_string($record->name)),
+                new moodle_url($listurl, ['action' => 'delete', 'id' => $id, 'confirm' => 1, 'sesskey' => sesskey()]),
+                $listurl
+            );
             echo $OUTPUT->footer();
             exit;
     }
@@ -78,8 +91,10 @@ $table->head = [get_string('templatename', 'local_transcript'), get_string('page
 foreach (template::get_all() as $template) {
     $count = $DB->count_records('local_transcript_element', ['templateid' => $template->id]);
     $link = function (string $action, string $text) use ($template): string {
-        return html_writer::link(new moodle_url('/local/transcript/templates.php',
-            ['action' => $action, 'id' => $template->id, 'sesskey' => sesskey()]), $text);
+        return html_writer::link(new moodle_url(
+            '/local/transcript/templates.php',
+            ['action' => $action, 'id' => $template->id, 'sesskey' => sesskey()]
+        ), $text);
     };
 
     $status = [];
@@ -92,13 +107,17 @@ foreach (template::get_all() as $template) {
         return new moodle_url('/local/transcript/designer.php', ['id' => $template->id, 'section' => $section]);
     };
     $actions = [
-        html_writer::link(new moodle_url('/local/transcript/template.php', ['id' => $template->id]),
-            get_string('tab_master', 'local_transcript')),
+        html_writer::link(
+            new moodle_url('/local/transcript/template.php', ['id' => $template->id]),
+            get_string('tab_master', 'local_transcript')
+        ),
         html_writer::link($designurl('header'), get_string('tab_header', 'local_transcript')),
         html_writer::link($designurl('transcript'), get_string('tab_transcript', 'local_transcript')),
         html_writer::link($designurl('footer'), get_string('tab_footer', 'local_transcript')),
-        html_writer::link(new moodle_url('/local/transcript/preview.php', ['id' => $template->id]),
-            get_string('tab_preview', 'local_transcript')),
+        html_writer::link(
+            new moodle_url('/local/transcript/preview.php', ['id' => $template->id]),
+            get_string('tab_preview', 'local_transcript')
+        ),
         $link('togglevisible', $template->visible ? get_string('hide') : get_string('show')),
         $link('duplicate', get_string('duplicate')),
     ];
@@ -120,7 +139,11 @@ foreach (template::get_all() as $template) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->single_button(new moodle_url('/local/transcript/template.php'), get_string('createtemplate', 'local_transcript'), 'get');
+echo $OUTPUT->single_button(
+    new moodle_url('/local/transcript/template.php'),
+    get_string('createtemplate', 'local_transcript'),
+    'get'
+);
 if ($table->data) {
     echo html_writer::table($table);
 } else {

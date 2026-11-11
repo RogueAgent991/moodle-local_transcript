@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript;
 
 /**
@@ -31,7 +30,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class verify_throttle {
-
     /** @var int The number of wrong codes after which no more codes are tried. */
     public const MAX_FAILURES = 10;
 

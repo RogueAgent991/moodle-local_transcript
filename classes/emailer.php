@@ -26,7 +26,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class emailer {
-
     /** @var string[] What the mail system of the site said when an email could not be sent (filled by the observer). */
     public static $errors = [];
 
@@ -103,8 +102,14 @@ class emailer {
         // Pictures of the message are files of the plugin. The address is complete, so email programs can load them.
         global $CFG;
         require_once($CFG->libdir . '/filelib.php');
-        $message = \file_rewrite_pluginfile_urls($message, 'pluginfile.php', template::get_context()->id, 'local_transcript',
-            template::FILEAREA_EMAIL, (int) ($model['template']['id'] ?? 0));
+        $message = \file_rewrite_pluginfile_urls(
+            $message,
+            'pluginfile.php',
+            template::get_context()->id,
+            'local_transcript',
+            template::FILEAREA_EMAIL,
+            (int) ($model['template']['id'] ?? 0)
+        );
         // An editor can write the braces of a placeholder in an address as %7B and %7D.
         $message = str_ireplace(['%7B%7B', '%7D%7D'], ['{{', '}}'], $message);
         $message = placeholders::replace($message, $model, 1, 1, true);
@@ -154,8 +159,11 @@ class emailer {
             }
         } else if ($sent) {
             // One email for the sender, which lists everybody who got the transcript.
-            $note = \html_writer::tag('p', get_string('email_copynote', 'local_transcript',
-                s(self::make_list($sent))));
+            $note = \html_writer::tag('p', get_string(
+                'email_copynote',
+                'local_transcript',
+                s(self::make_list($sent))
+            ));
             if (!self::send_one($USER, $from, $subject, $note . $html, $path, $filename)) {
                 $failed[] = (string) $USER->email;
             }
@@ -203,12 +211,28 @@ class emailer {
      * @param string $filename The name of the PDF in the email.
      * @return bool
      */
-    private static function send_one(\stdClass $to, \stdClass $from, string $subject, string $html, string $path,
-            string $filename): bool {
+    private static function send_one(
+        \stdClass $to,
+        \stdClass $from,
+        string $subject,
+        string $html,
+        string $path,
+        string $filename
+    ): bool {
         global $USER;
         $text = html_to_text($html, 0, false);
-        return (bool) email_to_user($to, $from, $subject, $text, $html, $path, $filename, true,
-            $USER->email ?? '', fullname($USER));
+        return (bool) email_to_user(
+            $to,
+            $from,
+            $subject,
+            $text,
+            $html,
+            $path,
+            $filename,
+            true,
+            $USER->email ?? '',
+            fullname($USER)
+        );
     }
 
     /**

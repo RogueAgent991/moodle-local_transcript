@@ -29,7 +29,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class data_collector {
-
     /** @var string The course is finished. */
     public const STATUS_COMPLETED = 'completed';
     /** @var string The student is working on the course. */
@@ -112,8 +111,13 @@ class data_collector {
 
         // Completed courses are kept in the transcript even when the student was unenrolled later.
         $completions = [];
-        $records = $DB->get_records_select('course_completions', 'userid = ? AND timecompleted IS NOT NULL AND timecompleted > 0',
-            [$userid], '', 'course, timecompleted');
+        $records = $DB->get_records_select(
+            'course_completions',
+            'userid = ? AND timecompleted IS NOT NULL AND timecompleted > 0',
+            [$userid],
+            '',
+            'course, timecompleted'
+        );
         foreach ($records as $record) {
             $completions[$record->course] = (int) $record->timecompleted;
         }
@@ -123,8 +127,13 @@ class data_collector {
         if (!$courseids) {
             return [];
         }
-        $courses = $DB->get_records_list('course', 'id', $courseids, '',
-            'id, fullname, shortname, idnumber, category, startdate, enddate, visible, summary, summaryformat');
+        $courses = $DB->get_records_list(
+            'course',
+            'id',
+            $courseids,
+            '',
+            'id, fullname, shortname, idnumber, category, startdate, enddate, visible, summary, summaryformat'
+        );
 
         $categories = [];
         $rows = [];
@@ -153,8 +162,11 @@ class data_collector {
             // Only the courses of the last years. A course that is still going on always counts.
             $lastyears = (int) ($settings->lastyears ?? 0);
             if ($lastyears > 0 && $status !== self::STATUS_INPROGRESS) {
-                $reference = $completed ?: max((int) $course->enddate, (int) ($enrolment->enroldate ?? 0),
-                    (int) $course->startdate);
+                $reference = $completed ?: max(
+                    (int) $course->enddate,
+                    (int) ($enrolment->enroldate ?? 0),
+                    (int) $course->startdate
+                );
                 if ($reference && $reference < strtotime('-' . $lastyears . ' years')) {
                     continue;
                 }
@@ -240,9 +252,11 @@ class data_collector {
         $result['grade'] = helper::plain_text($grade->str_grade);
         if ($item->gradetype == GRADE_TYPE_VALUE) {
             $result['gradepercent'] = helper::plain_text(
-                grade_format_gradevalue($grade->grade, $item, true, GRADE_DISPLAY_TYPE_PERCENTAGE));
+                grade_format_gradevalue($grade->grade, $item, true, GRADE_DISPLAY_TYPE_PERCENTAGE)
+            );
             $result['gradeletter'] = helper::plain_text(
-                grade_format_gradevalue($grade->grade, $item, true, GRADE_DISPLAY_TYPE_LETTER));
+                grade_format_gradevalue($grade->grade, $item, true, GRADE_DISPLAY_TYPE_LETTER)
+            );
         } else {
             // Scales (and text) cannot be turned into a percentage or a letter.
             $result['gradepercent'] = $result['grade'];

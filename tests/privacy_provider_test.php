@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript\privacy;
 
 use core_privacy\local\request\approved_contextlist;
@@ -31,8 +30,7 @@ use core_privacy\local\request\writer;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_transcript\privacy\provider
  */
-final class provider_test extends \core_privacy\tests\provider_testcase {
-
+final class privacy_provider_test extends \core_privacy\tests\provider_testcase {
     /**
      * Somebody who generated the transcript of a student gets no data of the student in the export.
      */

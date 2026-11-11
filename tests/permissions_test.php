@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript;
 
 /**
@@ -30,7 +29,6 @@ namespace local_transcript;
  * @covers     \local_transcript\data_collector
  */
 final class permissions_test extends \advanced_testcase {
-
     /**
      * A student in two courses, a teacher in the first one and a manager of the whole site.
      *

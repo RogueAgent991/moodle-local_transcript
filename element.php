@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Add an element to a section of a layout, or change one.
  *
@@ -64,7 +63,8 @@ if (!isset($allowed[$region]) || !in_array($type, $allowed[$region])) {
 }
 $template = template::get($templateid);
 
-$params = $id ? ['id' => $id] : ['templateid' => $templateid, 'region' => $region, 'choice' => $type . ($preset !== '' ? ':' . $preset : '')];
+$choice = $type . ($preset !== '' ? ':' . $preset : '');
+$params = $id ? ['id' => $id] : ['templateid' => $templateid, 'region' => $region, 'choice' => $choice];
 ui::setup_page('/local/transcript/element.php', $params, get_string('element', 'local_transcript'), 'admin');
 $designerurl = new moodle_url('/local/transcript/designer.php', ['id' => $templateid,
     'section' => ui::get_section_of_region($region)]);
@@ -91,8 +91,10 @@ if ($data = $form->get_data()) {
 
     // Start with what is stored, so that settings this type does not show are kept.
     $stored = $element ? $element->data : template::get_element_default_data($type);
-    foreach (['text', 'font', 'fontsize', 'fontstyle', 'colour', 'align', 'thickness', 'fill', 'fillcolour', 'field',
-            'prefix', 'decimals'] as $key) {
+    foreach (
+        ['text', 'font', 'fontsize', 'fontstyle', 'colour', 'align', 'thickness', 'fill', 'fillcolour', 'field',
+            'prefix', 'decimals'] as $key
+    ) {
         if (isset($data->$key)) {
             $stored[$key] = $data->$key;
         }
@@ -104,8 +106,14 @@ if ($data = $form->get_data()) {
     $savedid = template::save_element($record);
 
     if ($type === 'image') {
-        file_save_draft_area_files($data->image_filemanager, $context->id, 'local_transcript', template::FILEAREA_IMAGE,
-            $savedid, element_form::get_image_options());
+        file_save_draft_area_files(
+            $data->image_filemanager,
+            $context->id,
+            'local_transcript',
+            template::FILEAREA_IMAGE,
+            $savedid,
+            element_form::get_image_options()
+        );
     }
     redirect($designerurl, get_string('elementsaved', 'local_transcript'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
@@ -156,8 +164,10 @@ if ($element) {
         $defaults->field = $field;
         $defaults->name = $fields[$field] ?? $field;
         $defaults->width = min(helper::get_default_field_width($field), max(10.0, $defaults->width));
-        if (in_array($field, ['startdate', 'enddate', 'enroldate', 'completiondate', 'grade', 'gradepercent',
-                'gradeletter', 'passfail', 'status', 'year'])) {
+        if (
+            in_array($field, ['startdate', 'enddate', 'enroldate', 'completiondate', 'grade', 'gradepercent',
+                'gradeletter', 'passfail', 'status', 'year'])
+        ) {
             $defaults->align = 'C';
         }
         if (in_array($field, ['coursefullname', 'coursedescription']) && $template->rowheight >= 2 * $pitch + 1) {
@@ -172,8 +182,14 @@ $defaults->type = $type;
 $defaults->id = $id;
 if ($type === 'image') {
     $draftitemid = file_get_submitted_draft_itemid('image_filemanager');
-    file_prepare_draft_area($draftitemid, $context->id, 'local_transcript', template::FILEAREA_IMAGE, $id ?: null,
-        element_form::get_image_options());
+    file_prepare_draft_area(
+        $draftitemid,
+        $context->id,
+        'local_transcript',
+        template::FILEAREA_IMAGE,
+        $id ?: null,
+        element_form::get_image_options()
+    );
     $defaults->image_filemanager = $draftitemid;
 }
 $form->set_data($defaults);

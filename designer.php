@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * The editor of one section of a layout: the header, the transcript or the footer.
  *
@@ -46,8 +45,12 @@ $confirm = optional_param('confirm', 0, PARAM_BOOL);
 
 $template = template::get($id);
 $pageurl = new moodle_url('/local/transcript/designer.php', ['id' => $id, 'section' => $section]);
-ui::setup_page('/local/transcript/designer.php', ['id' => $id, 'section' => $section],
-    get_string('tab_' . $section, 'local_transcript'), 'admin');
+ui::setup_page(
+    '/local/transcript/designer.php',
+    ['id' => $id, 'section' => $section],
+    get_string('tab_' . $section, 'local_transcript'),
+    'admin'
+);
 
 if ($action !== '' && $elementid) {
     require_sesskey();
@@ -57,23 +60,33 @@ if ($action !== '' && $elementid) {
         case 'duplicate':
             template::duplicate_element($elementid);
             redirect($pageurl);
+            break;
         case 'up':
             template::move_element($elementid, -1);
             redirect($pageurl);
+            break;
         case 'down':
             template::move_element($elementid, 1);
             redirect($pageurl);
+            break;
         case 'delete':
             if ($confirm) {
                 template::delete_element($elementid);
-                redirect($pageurl, get_string('elementdeleted', 'local_transcript'), null,
-                    \core\output\notification::NOTIFY_SUCCESS);
+                redirect(
+                    $pageurl,
+                    get_string('elementdeleted', 'local_transcript'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
             }
             $element = template::get_element($elementid);
             echo $OUTPUT->header();
-            echo $OUTPUT->confirm(get_string('deleteelement_confirm', 'local_transcript', s($element->name)),
+            echo $OUTPUT->confirm(
+                get_string('deleteelement_confirm', 'local_transcript', s($element->name)),
                 new moodle_url($pageurl, ['action' => 'delete', 'elementid' => $elementid, 'confirm' => 1,
-                    'sesskey' => sesskey()]), $pageurl);
+                'sesskey' => sesskey()]),
+                $pageurl
+            );
             echo $OUTPUT->footer();
             exit;
     }
@@ -103,9 +116,14 @@ foreach ($regions as $region) {
     echo html_writer::div(get_string('region_' . $region . '_desc', 'local_transcript'), 'text-muted mb-2');
 
     if ($height <= 0) {
-        echo $OUTPUT->notification(get_string('regionnoheight', 'local_transcript',
-            html_writer::link(new moodle_url('/local/transcript/template.php', ['id' => $id]),
-                get_string('tab_master', 'local_transcript'))), \core\output\notification::NOTIFY_WARNING);
+        echo $OUTPUT->notification(get_string(
+            'regionnoheight',
+            'local_transcript',
+            html_writer::link(
+                new moodle_url('/local/transcript/template.php', ['id' => $id]),
+                get_string('tab_master', 'local_transcript')
+            )
+        ), \core\output\notification::NOTIFY_WARNING);
         continue;
     }
 
@@ -118,10 +136,20 @@ foreach ($regions as $region) {
     echo html_writer::tag('form', html_writer::div(
         html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'templateid', 'value' => $id]) .
         html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'region', 'value' => $region]) .
-        html_writer::select(helper::get_add_options($region), 'choice', 'text', false,
-            ['class' => 'custom-select form-select w-auto mr-2 me-2', 'aria-label' => get_string('addelement', 'local_transcript')]) .
-        html_writer::tag('button', get_string('addelement', 'local_transcript'), ['type' => 'submit', 'class' => 'btn btn-primary']),
-        'd-flex align-items-center mb-3'), ['method' => 'get', 'action' => (new moodle_url('/local/transcript/element.php'))->out(false)]);
+        html_writer::select(
+            helper::get_add_options($region),
+            'choice',
+            'text',
+            false,
+            ['class' => 'custom-select form-select w-auto mr-2 me-2', 'aria-label' => get_string('addelement', 'local_transcript')]
+        ) .
+        html_writer::tag(
+            'button',
+            get_string('addelement', 'local_transcript'),
+            ['type' => 'submit', 'class' => 'btn btn-primary']
+        ),
+        'd-flex align-items-center mb-3'
+    ), ['method' => 'get', 'action' => (new moodle_url('/local/transcript/element.php'))->out(false)]);
 
     // The list of the elements of this part.
     $isfixed = in_array($region, [helper::REGION_ROW, helper::REGION_HEADING]);

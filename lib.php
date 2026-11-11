@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Library functions of the Student Transcript plugin.
  *
@@ -24,8 +23,6 @@
  *             <markn@moodle.com> and contributors, https://moodle.org/plugins/mod_customcert (GNU GPL v3 or later)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Add a link to the transcript to the profile page of a user. It shows for the user's own profile and
@@ -41,8 +38,13 @@ function local_transcript_myprofile_navigation(\core_user\output\myprofile\tree 
         return;
     }
     $url = new moodle_url('/local/transcript/index.php', ['userid' => $user->id]);
-    $node = new \core_user\output\myprofile\node('reports', 'local_transcript', get_string('transcript', 'local_transcript'),
-        null, $url);
+    $node = new \core_user\output\myprofile\node(
+        'reports',
+        'local_transcript',
+        get_string('transcript', 'local_transcript'),
+        null,
+        $url
+    );
     $tree->add_node($node);
 }
 
@@ -73,8 +75,10 @@ function local_transcript_pluginfile($course, $cm, $context, $filearea, $args, $
         }
         send_stored_file($file, 86400, 0, false, $options);
     }
-    if (!in_array($filearea, [\local_transcript\template::FILEAREA_IMAGE, \local_transcript\template::FILEAREA_WATERMARK,
-            \local_transcript\template::FILEAREA_BACKGROUND])) {
+    if (
+        !in_array($filearea, [\local_transcript\template::FILEAREA_IMAGE, \local_transcript\template::FILEAREA_WATERMARK,
+            \local_transcript\template::FILEAREA_BACKGROUND])
+    ) {
         return false;
     }
     require_login(null, false);

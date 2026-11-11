@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * The master control of a layout: page size, margins, the heights of the three sections, background graphic,
  * watermark, which courses are included and the PDF protection. Also creates a new layout.
@@ -43,8 +42,8 @@ ui::setup_page('/local/transcript/template.php', ['id' => $id], $title, 'admin')
 
 $listurl = new moodle_url('/local/transcript/templates.php');
 $defaults = $id ? template::get($id) : template::get_defaults();
-$form = new template_form(new moodle_url('/local/transcript/template.php', ['id' => $id]),
-    ['transcriptheight' => helper::get_transcript_height($defaults)]);
+$formurl = new moodle_url('/local/transcript/template.php', ['id' => $id]);
+$form = new template_form($formurl, ['transcriptheight' => helper::get_transcript_height($defaults)]);
 
 if ($form->is_cancelled()) {
     redirect($listurl);
@@ -61,31 +60,77 @@ if ($data = $form->get_data()) {
         $newid = template::create($data);
     }
     // The message of the email, with its pictures.
-    $editordata = file_postupdate_standard_editor($editordata, 'emailmessage', template_form::get_email_editor_options(),
-        $context, 'local_transcript', template::FILEAREA_EMAIL, $newid);
-    $DB->update_record('local_transcript_template', (object) ['id' => $newid, 'emailmessage' => $editordata->emailmessage,
-        'emailmessageformat' => $editordata->emailmessageformat]);
-    file_save_draft_area_files($data->watermark_filemanager, $context->id, 'local_transcript', template::FILEAREA_WATERMARK,
-        $newid, template_form::get_watermark_options());
-    file_save_draft_area_files($data->background_filemanager, $context->id, 'local_transcript', template::FILEAREA_BACKGROUND,
-        $newid, template_form::get_background_options());
+    $editordata = file_postupdate_standard_editor(
+        $editordata,
+        'emailmessage',
+        template_form::get_email_editor_options(),
+        $context,
+        'local_transcript',
+        template::FILEAREA_EMAIL,
+        $newid
+    );
+    $DB->update_record('local_transcript_template', (object) [
+        'id' => $newid,
+        'emailmessage' => $editordata->emailmessage,
+        'emailmessageformat' => $editordata->emailmessageformat,
+    ]);
+    file_save_draft_area_files(
+        $data->watermark_filemanager,
+        $context->id,
+        'local_transcript',
+        template::FILEAREA_WATERMARK,
+        $newid,
+        template_form::get_watermark_options()
+    );
+    file_save_draft_area_files(
+        $data->background_filemanager,
+        $context->id,
+        'local_transcript',
+        template::FILEAREA_BACKGROUND,
+        $newid,
+        template_form::get_background_options()
+    );
     if ($id) {
-        redirect(new moodle_url('/local/transcript/template.php', ['id' => $id]), get_string('changessaved'), null,
-            \core\output\notification::NOTIFY_SUCCESS);
+        redirect(
+            new moodle_url('/local/transcript/template.php', ['id' => $id]),
+            get_string('changessaved'),
+            null,
+            \core\output\notification::NOTIFY_SUCCESS
+        );
     }
-    redirect(new moodle_url('/local/transcript/designer.php', ['id' => $newid, 'section' => 'header']),
-        get_string('templatecreated', 'local_transcript'), null, \core\output\notification::NOTIFY_SUCCESS);
+    redirect(
+        new moodle_url('/local/transcript/designer.php', ['id' => $newid, 'section' => 'header']),
+        get_string('templatecreated', 'local_transcript'),
+        null,
+        \core\output\notification::NOTIFY_SUCCESS
+    );
 }
 
-foreach ([template::FILEAREA_WATERMARK => 'watermark_filemanager', template::FILEAREA_BACKGROUND => 'background_filemanager']
-        as $area => $field) {
+$filefields = [
+    template::FILEAREA_WATERMARK => 'watermark_filemanager',
+    template::FILEAREA_BACKGROUND => 'background_filemanager',
+];
+foreach ($filefields as $area => $field) {
     $draftitemid = file_get_submitted_draft_itemid($field);
-    file_prepare_draft_area($draftitemid, $context->id, 'local_transcript', $area, $id ?: null,
-        template_form::get_watermark_options());
+    file_prepare_draft_area(
+        $draftitemid,
+        $context->id,
+        'local_transcript',
+        $area,
+        $id ?: null,
+        template_form::get_watermark_options()
+    );
     $defaults->$field = $draftitemid;
 }
-$defaults = file_prepare_standard_editor($defaults, 'emailmessage', template_form::get_email_editor_options(), $context,
-    'local_transcript', template::FILEAREA_EMAIL, $id ?: null);
+$defaults = file_prepare_standard_editor(
+    $defaults,
+    'emailmessage',
+    template_form::get_email_editor_options(),
+    $context,
+    'local_transcript',
+    template::FILEAREA_EMAIL,
+    $id ?: null
+);
 $form->set_data($defaults);
 
 echo $OUTPUT->header();

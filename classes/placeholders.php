@@ -26,7 +26,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class placeholders {
-
     /** @var string[] Placeholders that read a field of the student. */
     private const USER_FIELDS = [
         'firstname', 'lastname', 'middlename', 'username', 'email', 'idnumber', 'institution', 'department', 'city',
@@ -89,17 +88,27 @@ class placeholders {
      * @param array $model The data of the transcript: user, courses, code, issuedate, sitename and template.
      * @param int $page The number of the page that is being drawn.
      * @param int $totalpages The number of pages of the transcript.
+     * @param bool $escapehtml Make the values safe to be used in HTML.
      * @return string
      */
-    public static function replace(string $text, array $model, int $page = 1, int $totalpages = 1,
-            bool $escapehtml = false): string {
+    public static function replace(
+        string $text,
+        array $model,
+        int $page = 1,
+        int $totalpages = 1,
+        bool $escapehtml = false
+    ): string {
         if (strpos($text, '{{') === false) {
             return $text;
         }
         $dateformat = $model['template']['dateformat'] ?? 'long';
 
         return preg_replace_callback('/\{\{\s*([A-Za-z0-9_:\-]+)\s*\}\}/', function (array $match) use (
-            $model, $page, $totalpages, $dateformat, $escapehtml
+            $model,
+            $page,
+            $totalpages,
+            $dateformat,
+            $escapehtml
         ) {
             $value = self::get_value($match, $model, $page, $totalpages, $dateformat);
             return $escapehtml ? htmlspecialchars($value, ENT_QUOTES, 'UTF-8') : $value;
@@ -121,47 +130,47 @@ class placeholders {
             $key = strtolower($match[1]);
             $user = $model['user'] ?? [];
 
-            if ($key === 'studentname') {
-                return (string) ($user['fullname'] ?? '');
-            }
-            if (in_array($key, self::USER_FIELDS)) {
-                return (string) ($user[$key] ?? '');
-            }
-            if (strpos($key, 'profile:') === 0) {
-                // Short names of profile fields are case sensitive, so look at the original spelling.
-                $shortname = substr(trim($match[1]), 8);
-                foreach (($user['profile'] ?? []) as $name => $value) {
-                    if (strcasecmp($name, $shortname) === 0) {
-                        return (string) $value;
-                    }
+        if ($key === 'studentname') {
+            return (string) ($user['fullname'] ?? '');
+        }
+        if (in_array($key, self::USER_FIELDS)) {
+            return (string) ($user[$key] ?? '');
+        }
+        if (strpos($key, 'profile:') === 0) {
+            // Short names of profile fields are case sensitive, so look at the original spelling.
+            $shortname = substr(trim($match[1]), 8);
+            foreach (($user['profile'] ?? []) as $name => $value) {
+                if (strcasecmp($name, $shortname) === 0) {
+                    return (string) $value;
                 }
-                return '';
             }
+            return '';
+        }
 
-            switch ($key) {
-                case 'issuedate':
-                    return helper::format_date($model['issuedate'] ?? time(), $dateformat);
-                case 'verificationcode':
-                    return (string) ($model['code'] ?? '');
-                case 'verificationurl':
-                    return helper::get_verify_url((string) ($model['code'] ?? ''));
-                case 'pagenumber':
-                    return (string) $page;
-                case 'totalpages':
-                    return (string) $totalpages;
-                case 'sitename':
-                    return (string) ($model['sitename'] ?? '');
-                case 'coursecount':
-                    return (string) count($model['courses'] ?? []);
-                case 'completedcount':
-                    return (string) self::count_status($model, data_collector::STATUS_COMPLETED);
-                case 'transcriptduration':
-                    $years = (int) ($model['template']['lastyears'] ?? 0);
-                    return $years <= 0 ? get_string('allcourses', 'local_transcript')
-                        : get_string($years === 1 ? 'oneyear' : 'numyears', 'local_transcript', $years);
-                case 'inprogresscount':
-                    return (string) self::count_status($model, data_collector::STATUS_INPROGRESS);
-            }
+        switch ($key) {
+            case 'issuedate':
+                return helper::format_date($model['issuedate'] ?? time(), $dateformat);
+            case 'verificationcode':
+                return (string) ($model['code'] ?? '');
+            case 'verificationurl':
+                return helper::get_verify_url((string) ($model['code'] ?? ''));
+            case 'pagenumber':
+                return (string) $page;
+            case 'totalpages':
+                return (string) $totalpages;
+            case 'sitename':
+                return (string) ($model['sitename'] ?? '');
+            case 'coursecount':
+                return (string) count($model['courses'] ?? []);
+            case 'completedcount':
+                return (string) self::count_status($model, data_collector::STATUS_COMPLETED);
+            case 'transcriptduration':
+                $years = (int) ($model['template']['lastyears'] ?? 0);
+                return $years <= 0 ? get_string('allcourses', 'local_transcript')
+                    : get_string($years === 1 ? 'oneyear' : 'numyears', 'local_transcript', $years);
+            case 'inprogresscount':
+                return (string) self::count_status($model, data_collector::STATUS_INPROGRESS);
+        }
             return $match[0];
         }
     }

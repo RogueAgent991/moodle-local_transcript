@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Makes the PDF of a transcript again from its verification code.
  *
@@ -28,6 +27,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// This page is open to everybody when the administrator chooses so (see below), so the login is not always required.
+// phpcs:ignore moodle.Files.RequireLogin.Missing
 require_once(__DIR__ . '/../../config.php');
 
 use local_transcript\helper;
@@ -90,5 +91,6 @@ echo html_writer::tag('form', html_writer::div(
         'class' => 'form-control w-auto mr-2 me-2', 'maxlength' => 40, 'autocomplete' => 'off',
         'aria-label' => get_string('verificationcode', 'local_transcript'), 'placeholder' => 'XXXX-XXXX-XXXX']) .
     html_writer::tag('button', get_string('verifyandopen', 'local_transcript'), ['type' => 'submit', 'class' => 'btn btn-primary']),
-    'd-flex align-items-center'), ['method' => 'get', 'action' => (new moodle_url('/local/transcript/verify.php'))->out(false)]);
+    'd-flex align-items-center'
+), ['method' => 'get', 'action' => (new moodle_url('/local/transcript/verify.php'))->out(false)]);
 echo $OUTPUT->footer();

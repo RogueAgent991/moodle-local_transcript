@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * The list of generated transcripts, for managers.
  *
@@ -42,8 +41,12 @@ $page = optional_param('page', 0, PARAM_INT);
 $perpage = 30;
 
 $pageurl = new moodle_url('/local/transcript/issues.php', ['search' => $search, 'page' => $page]);
-ui::setup_page('/local/transcript/issues.php', ['search' => $search, 'page' => $page],
-    get_string('issuedtranscripts', 'local_transcript'), 'admin');
+ui::setup_page(
+    '/local/transcript/issues.php',
+    ['search' => $search, 'page' => $page],
+    get_string('issuedtranscripts', 'local_transcript'),
+    'admin'
+);
 
 if ($action !== '' && $id) {
     require_sesskey();
@@ -52,18 +55,27 @@ if ($action !== '' && $id) {
         case 'revoke':
             $DB->set_field('local_transcript_issue', 'revoked', 1, ['id' => $id]);
             redirect($pageurl);
+            break;
         case 'restore':
             $DB->set_field('local_transcript_issue', 'revoked', 0, ['id' => $id]);
             redirect($pageurl);
+            break;
         case 'delete':
             if ($confirm) {
                 issue_manager::delete_issue($id);
-                redirect($pageurl, get_string('issuedeleted', 'local_transcript'), null,
-                    \core\output\notification::NOTIFY_SUCCESS);
+                redirect(
+                    $pageurl,
+                    get_string('issuedeleted', 'local_transcript'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
             }
             echo $OUTPUT->header();
-            echo $OUTPUT->confirm(get_string('deleteissue_confirm', 'local_transcript'),
-                new moodle_url($pageurl, ['action' => 'delete', 'id' => $id, 'confirm' => 1, 'sesskey' => sesskey()]), $pageurl);
+            echo $OUTPUT->confirm(
+                get_string('deleteissue_confirm', 'local_transcript'),
+                new moodle_url($pageurl, ['action' => 'delete', 'id' => $id, 'confirm' => 1, 'sesskey' => sesskey()]),
+                $pageurl
+            );
             echo $OUTPUT->footer();
             exit;
     }
@@ -76,7 +88,8 @@ $params = $studentfields->params + $issuerfields->params;
 if (trim($search) !== '') {
     $like = '%' . $DB->sql_like_escape(trim($search)) . '%';
     $where = '(' . $DB->sql_like('i.code', ':s1', false, false) . ' OR ' . $DB->sql_like('u.lastname', ':s2', false, false) .
-        ' OR ' . $DB->sql_like('u.firstname', ':s3', false, false) . ' OR ' . $DB->sql_like('u.username', ':s4', false, false) . ')';
+        ' OR ' . $DB->sql_like('u.firstname', ':s3', false, false) .
+        ' OR ' . $DB->sql_like('u.username', ':s4', false, false) . ')';
     $params += ['s1' => $like, 's2' => $like, 's3' => $like, 's4' => $like];
 }
 $from = "FROM {local_transcript_issue} i
@@ -94,7 +107,8 @@ echo html_writer::tag('form', html_writer::div(
         'class' => 'form-control w-auto mr-2 me-2', 'size' => 30, 'aria-label' => get_string('search'),
         'placeholder' => get_string('searchissues', 'local_transcript')]) .
     html_writer::tag('button', get_string('search'), ['type' => 'submit', 'class' => 'btn btn-secondary']),
-    'd-flex align-items-center mb-3'), ['method' => 'get', 'action' => (new moodle_url('/local/transcript/issues.php'))->out(false)]);
+    'd-flex align-items-center mb-3'
+), ['method' => 'get', 'action' => (new moodle_url('/local/transcript/issues.php'))->out(false)]);
 
 $table = new html_table();
 $table->attributes['class'] = 'generaltable';
@@ -120,8 +134,10 @@ foreach ($records as $record) {
         $record->revoked ? html_writer::span(get_string('revoked', 'local_transcript'), 'badge bg-danger text-white') :
             get_string('valid', 'local_transcript'),
         implode(' | ', [
-            html_writer::link(new moodle_url('/local/transcript/transcript.php', ['id' => $record->id]),
-                get_string('open', 'local_transcript')),
+            html_writer::link(
+                new moodle_url('/local/transcript/transcript.php', ['id' => $record->id]),
+                get_string('open', 'local_transcript')
+            ),
             $record->revoked ? $link('restore', get_string('restore', 'local_transcript')) :
                 $link('revoke', get_string('revoke', 'local_transcript')),
             $link('delete', get_string('delete')),

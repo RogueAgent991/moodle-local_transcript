@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript\external;
 
 use core_external\external_api;
@@ -32,7 +31,6 @@ use core_external\external_value;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class set_element_position extends external_api {
-
     /**
      * Parameters of execute().
      *
@@ -58,7 +56,9 @@ class set_element_position extends external_api {
         global $DB;
 
         ['id' => $id, 'posx' => $posx, 'posy' => $posy] = self::validate_parameters(
-            self::execute_parameters(), ['id' => $id, 'posx' => $posx, 'posy' => $posy]);
+            self::execute_parameters(),
+            ['id' => $id, 'posx' => $posx, 'posy' => $posy]
+        );
 
         $context = \context_system::instance();
         self::validate_context($context);

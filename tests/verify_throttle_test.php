@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript;
 
 /**
@@ -29,7 +28,6 @@ namespace local_transcript;
  * @covers     \local_transcript\verify_throttle
  */
 final class verify_throttle_test extends \advanced_testcase {
-
     /**
      * After too many wrong codes nothing more is tried, whatever the session.
      */

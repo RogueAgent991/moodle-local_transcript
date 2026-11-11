@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Upgrade steps of the Student Transcript plugin.
  *
@@ -24,8 +23,6 @@
  *             <markn@moodle.com> and contributors, https://moodle.org/plugins/mod_customcert (GNU GPL v3 or later)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Upgrade the plugin.
@@ -59,8 +56,13 @@ function xmldb_local_transcript_upgrade($oldversion) {
         $dbman->change_field_precision($elementtable, $regionfield);
 
         foreach ($DB->get_records('local_transcript_template') as $record) {
-            if ($DB->record_exists_select('local_transcript_element', "templateid = ? AND region IN ('transcript', 'transcript_heading')",
-                    [$record->id])) {
+            if (
+                $DB->record_exists_select(
+                    'local_transcript_element',
+                    "templateid = ? AND region IN ('transcript', 'transcript_heading')",
+                    [$record->id]
+                )
+            ) {
                 continue;
             }
             // The space that used to be left between the sections is added to the header and the footer.
@@ -74,9 +76,18 @@ function xmldb_local_transcript_upgrade($oldversion) {
             $record->headingheight = $converted['headingheight'];
             $DB->update_record('local_transcript_template', $record);
             foreach (array_merge($converted['heading'], $converted['row']) as $element) {
-                \local_transcript\template::insert_starter_element((int) $record->id, $element['region'], $element['type'],
-                    $element['name'], $element['posx'], $element['posy'], $element['width'], $element['height'], 0,
-                    $element['data']);
+                \local_transcript\template::insert_starter_element(
+                    (int) $record->id,
+                    $element['region'],
+                    $element['type'],
+                    $element['name'],
+                    $element['posx'],
+                    $element['posy'],
+                    $element['width'],
+                    $element['height'],
+                    0,
+                    $element['data']
+                );
             }
         }
         upgrade_plugin_savepoint(true, 2026102600, 'local', 'transcript');

@@ -102,6 +102,13 @@ jobs:
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
+      - name: Show amd build (temporary)
+        if: ${{ !cancelled() }}
+        run: |
+          cd moodle/local/transcript/amd/build
+          ls -la
+          for f in designer.min.js designer.min.js.map; do echo "BEGIN-$f"; base64 -w0 "$f"; echo; echo "END-$f"; done
+
       - name: PHPUnit tests
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning

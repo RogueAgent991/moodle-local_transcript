@@ -28,7 +28,6 @@ use local_transcript\helper;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class form_helper {
-
     /**
      * Add a field where a colour can be picked.
      *

@@ -30,7 +30,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class issue_manager {
-
     /**
      * The layout and the data of a transcript, as they are right now.
      *
@@ -56,8 +55,11 @@ class issue_manager {
         } else {
             $sample = data_collector::get_sample_data();
             $model['user'] = $sample['user'];
-            $model['courses'] = data_collector::sort_courses($sample['courses'], $model['template']['groupby'],
-                $model['template']['sortby']);
+            $model['courses'] = data_collector::sort_courses(
+                $sample['courses'],
+                $model['template']['groupby'],
+                $model['template']['sortby']
+            );
         }
         $model['issuedate'] = time();
         $model['code'] = '';
@@ -99,8 +101,14 @@ class issue_manager {
      */
     public static function get_issue_image_provider(int $issueid): \Closure {
         return function (string $key) use ($issueid) {
-            $file = get_file_storage()->get_file(template::get_context()->id, 'local_transcript',
-                template::FILEAREA_ISSUE, $issueid, '/', $key);
+            $file = get_file_storage()->get_file(
+                template::get_context()->id,
+                'local_transcript',
+                template::FILEAREA_ISSUE,
+                $issueid,
+                '/',
+                $key
+            );
             return $file ?: null;
         };
     }
@@ -178,8 +186,12 @@ class issue_manager {
             $transaction->allow_commit();
         } catch (\Throwable $e) {
             if (!empty($issue->id)) {
-                get_file_storage()->delete_area_files(template::get_context()->id, 'local_transcript',
-                    template::FILEAREA_ISSUE, $issue->id);
+                get_file_storage()->delete_area_files(
+                    template::get_context()->id,
+                    'local_transcript',
+                    template::FILEAREA_ISSUE,
+                    $issue->id
+                );
             }
             $transaction->rollback($e);
         }
@@ -292,8 +304,12 @@ class issue_manager {
      */
     public static function delete_issue(int $issueid): void {
         global $DB;
-        get_file_storage()->delete_area_files(template::get_context()->id, 'local_transcript',
-            template::FILEAREA_ISSUE, $issueid);
+        get_file_storage()->delete_area_files(
+            template::get_context()->id,
+            'local_transcript',
+            template::FILEAREA_ISSUE,
+            $issueid
+        );
         $DB->delete_records('local_transcript_issue', ['id' => $issueid]);
     }
 }

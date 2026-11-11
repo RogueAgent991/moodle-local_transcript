@@ -26,7 +26,6 @@ namespace local_transcript;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class permissions {
-
     /** @var int The most students that are shown when searching. */
     public const SEARCH_LIMIT = 50;
 
@@ -121,8 +120,12 @@ class permissions {
      */
     public static function require_generate_for(int $studentid): void {
         if (!self::can_generate_for($studentid)) {
-            throw new \required_capability_exception(\context_system::instance(), 'local/transcript:generateforothers',
-                'nopermissions', '');
+            throw new \required_capability_exception(
+                \context_system::instance(),
+                'local/transcript:generateforothers',
+                'nopermissions',
+                ''
+            );
         }
     }
 
@@ -257,8 +260,12 @@ class permissions {
      */
     public static function require_access_issue(\stdClass $issue): void {
         if (!self::can_access_issue($issue)) {
-            throw new \required_capability_exception(\context_system::instance(), 'local/transcript:generateforothers',
-                'nopermissions', '');
+            throw new \required_capability_exception(
+                \context_system::instance(),
+                'local/transcript:generateforothers',
+                'nopermissions',
+                ''
+            );
         }
     }
 

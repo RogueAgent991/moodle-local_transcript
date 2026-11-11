@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace local_transcript\privacy;
 
 use core_privacy\local\metadata\collection;
@@ -41,7 +40,6 @@ class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider,
     \core_privacy\local\request\userlist_provider {
-
     /**
      * Describe the data that is stored.
      *
@@ -108,8 +106,12 @@ class provider implements
             return;
         }
 
-        $records = $DB->get_records_select('local_transcript_issue', 'userid = :userid OR issuedby = :issuedby',
-            ['userid' => $userid, 'issuedby' => $userid], 'timecreated ASC');
+        $records = $DB->get_records_select(
+            'local_transcript_issue',
+            'userid = :userid OR issuedby = :issuedby',
+            ['userid' => $userid, 'issuedby' => $userid],
+            'timecreated ASC'
+        );
         $transcripts = [];
         foreach ($records as $record) {
             $about = (int) $record->userid === (int) $userid;
@@ -143,7 +145,9 @@ class provider implements
         }
         if ($transcripts) {
             writer::with_context($systemcontext)->export_data(
-                [get_string('pluginname', 'local_transcript')], (object) ['transcripts' => $transcripts]);
+                [get_string('pluginname', 'local_transcript')],
+                (object) ['transcripts' => $transcripts]
+            );
         }
     }
 
